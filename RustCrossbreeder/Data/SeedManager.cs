@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace RustCrossbreeder.Data
 {
@@ -78,16 +76,20 @@ namespace RustCrossbreeder.Data
 		/// <summary>
 		/// Crossbreed the seeds in the database for the specified amount of generations and return the result seeds
 		/// </summary>
-		/// <param name="traits"></param>
+		/// <param name="seeds"></param>
 		/// <param name="generations"></param>
 		/// <returns></returns>
-		public Seed[] CrossbreedSeeds(string traits, int generations)
+		public Seed[] CrossbreedSeeds(Seed[] seeds, int generations)
 		{
+			// Handle Null or Empty Input
+			if (seeds == null || seeds.Length == 0)
+			{
+				return null;
+			}
+
 			var resultSeeds = new List<Seed>();
 			for (int i = 0; i < generations; i++)
 			{
-				var seeds = this._seedStore.GetSeeds().ToArray();
-
 				// TODO: For each unique combination of seeds (using 3-8 seeds because of farm plot size) run the BreedSeeds method and store results as next generation
 
 				resultSeeds.AddRange( this.BreedSeeds(seeds) );
@@ -107,6 +109,12 @@ namespace RustCrossbreeder.Data
 		/// <returns></returns>
 		private Seed[] BreedSeeds(Seed[] seeds)
 		{
+			// Handle Null or Empty Input
+			if (seeds == null || seeds.Length == 0)
+			{
+				return null;
+			}
+
 			var resultSeeds = new List<Seed>();
 			var maxGeneration = seeds.Max(a => a.Generation);
 

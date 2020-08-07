@@ -24,7 +24,12 @@ namespace RustCrossbreeder
 		private SeedManager _seedManager;
 
 		/// <summary>
-		/// The DataSource for the output display seeds
+		/// The DataSource for the crossbreeder input seed DataGridView
+		/// </summary>
+		private List<Seed> _crossBreederInputDataSource = new List<Seed>();
+
+		/// <summary>
+		/// The DataSource for the output display seeds DataGridView
 		/// </summary>
 		private Seed[] _outputSeedsDisplayDataSource;
 
@@ -99,6 +104,11 @@ namespace RustCrossbreeder
 		{
 			InitializeComponent();
 
+			// Set DataGridViews to DoubleBuffer to reduce redraw lag
+			this.dgvInputSeeds.DoubleBuffered(true);
+			this.dgvOutputSeeds.DoubleBuffered(true);
+			this.dgvCrossbreedInput.DoubleBuffered(true);
+
 			this._seedManager = seedManager;
 		}
 
@@ -111,25 +121,47 @@ namespace RustCrossbreeder
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void btnAdd_Click(object sender, EventArgs e)
+		private void btnImportSeeds_Click(object sender, EventArgs e)
 		{
 			foreach (var line in rtbSeeds.Lines)
 			{
-				this._seedManager.AddSeed(new Seed(line));
+				if (!string.IsNullOrWhiteSpace(line))
+				{
+					this._seedManager.AddSeed(new Seed(line));
+				}
 			}
 			
-			this.RefreshDataSource();
+			this.RefreshInputDataSource();
 		}
 
 		/// <summary>
-		/// Remove an input seed from the seed store
+		/// Add a seed to the crossbreeder input
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void btnRemove_Click(object sender, EventArgs e)
+		private void btnAdd_Click(object sender, EventArgs e)
 		{
-			this._seedManager.RemoveSeed((Seed)dgvInputSeeds.SelectedRows[0].DataBoundItem);
-			this.RefreshDataSource();
+			foreach (DataGridViewRow row in dgvInputSeeds.SelectedRows)
+			{
+				this._crossBreederInputDataSource.Add(((Seed) row.DataBoundItem).DeepCopy());
+			}
+
+			this.RefreshCrossBreederDataSource();
+		}
+
+		/// <summary>
+		/// Delete an input seed from the seed store
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnDelete_Click(object sender, EventArgs e)
+		{
+			foreach (DataGridViewRow row in dgvInputSeeds.SelectedRows)
+			{
+				this._seedManager.RemoveSeed((Seed)row.DataBoundItem);
+			}
+
+			this.RefreshInputDataSource();
 		}
 
 		/// <summary>
@@ -139,28 +171,45 @@ namespace RustCrossbreeder
 		/// <param name="e"></param>
 		private void btnCrossBreed_Click(object sender, EventArgs e)
 		{
-			this._outputSeedsDisplayDataSource = this._seedManager.CrossbreedSeeds(string.Empty, 1);
-			this.RefreshDataSource();
+			if (dgvCrossbreedInput.SelectedCells.Count == 0)
+			{
+				return; // Ignore Empty Requests
+			}
+
+			var breedSeeds = new List<Seed>();
+			foreach (DataGridViewCell cell in dgvCrossbreedInput.SelectedCells)
+			{
+				breedSeeds.Add((Seed)dgvCrossbreedInput.Rows[cell.RowIndex].DataBoundItem);
+			}
+
+			this._outputSeedsDisplayDataSource = this._seedManager.CrossbreedSeeds(breedSeeds.ToArray(), 1);
+
+			this.RefreshOutputDataSource();
 		}
 
 		/// <summary>
-		/// Input Seeds Data Source Updated Form Event
+		/// Remove the selected seeds from the cross-breeder
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void dgvInputSeeds_DataSourceChanged(object sender, EventArgs e)
+		private void btnRemove_Click(object sender, EventArgs e)
 		{
-			UpdateDataSourceTraitHighlights((DataGridView)sender);
-		}
+			var tempCopy = new Dictionary<Seed, bool>();
+			foreach (var seed in _crossBreederInputDataSource)
+			{
+				tempCopy.Add(seed, false);
+			}
 
-		/// <summary>
-		/// Output Seeds Data Source Updated Form Event
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void dgvOutputSeeds_DataSourceChanged(object sender, EventArgs e)
-		{
-			UpdateDataSourceTraitHighlights((DataGridView)sender);
+			foreach (DataGridViewRow row in dgvCrossbreedInput.SelectedRows)
+			{
+				tempCopy[(Seed)row.DataBoundItem] = true; // Set Delete flag
+			}
+
+			// Overwrite existing data source
+			var resultDataSource = tempCopy.Where(a => a.Value != true).ToList();
+			this._crossBreederInputDataSource = resultDataSource.Select(a => a.Key.DeepCopy()).ToList();
+
+			this.RefreshCrossBreederDataSource();
 		}
 
 		/// <summary>
@@ -180,13 +229,28 @@ namespace RustCrossbreeder
 		/// <summary>
 		/// Update the InputSeed Data source with the input seeds from the Database
 		/// </summary>
-		private void RefreshDataSource()
+		private void RefreshInputDataSource()
 		{
 			this.dgvInputSeeds.DataSource = this._seedManager.ViewInputSeeds();
-			this.dgvOutputSeeds.DataSource = _outputSeedsDisplayDataSource;
-
 			this.dgvInputSeeds.ClearSelection();
+		}
+
+		/// <summary>
+		/// Update the OutputSeed Data source
+		/// </summary>
+		private void RefreshOutputDataSource()
+		{
+			this.dgvOutputSeeds.DataSource = _outputSeedsDisplayDataSource;
 			this.dgvOutputSeeds.ClearSelection();
+		}
+
+		/// <summary>
+		/// Update the CrossBreeder Data source
+		/// </summary>
+		private void RefreshCrossBreederDataSource()
+		{
+			this.dgvCrossbreedInput.DataSource = _crossBreederInputDataSource.ToList();
+			this.dgvCrossbreedInput.ClearSelection();
 		}
 
 		/// <summary>
@@ -195,6 +259,7 @@ namespace RustCrossbreeder
 		private void UpdateDataSourceTraitHighlights(DataGridView grid)
 		{
 			// Highlight Trait String
+			// TODO: Highlight the Trait String as Green/Red depending on PropertyAlignment
 
 			// Highlight Property Weights
 			foreach (var row in grid.Rows.Cast<DataGridViewRow>())

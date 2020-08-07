@@ -30,17 +30,20 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.lblSeed = new System.Windows.Forms.Label();
-			this.btnAdd = new System.Windows.Forms.Button();
+			this.btnImport = new System.Windows.Forms.Button();
 			this.dgvInputSeeds = new System.Windows.Forms.DataGridView();
 			this.dgvOutputSeeds = new System.Windows.Forms.DataGridView();
 			this.btnCrossBreed = new System.Windows.Forms.Button();
-			this.lblIntendedOutput = new System.Windows.Forms.Label();
-			this.tbOutputTraits = new System.Windows.Forms.TextBox();
-			this.btnRemove = new System.Windows.Forms.Button();
+			this.btnDelete = new System.Windows.Forms.Button();
 			this.rtbSeeds = new System.Windows.Forms.RichTextBox();
-			this.splitContainer = new System.Windows.Forms.SplitContainer();
+			this.splitContainerHorizontal = new System.Windows.Forms.SplitContainer();
+			this.dgvCrossbreedInput = new System.Windows.Forms.DataGridView();
+			this.splitContainerVertical = new System.Windows.Forms.SplitContainer();
+			this.btnAdd = new System.Windows.Forms.Button();
+			this.btnRemove = new System.Windows.Forms.Button();
 			this.traitsDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.generationDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.probabilityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -50,6 +53,14 @@
 			this.waterNeedDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.emptyTraitDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.seedBindingSource = new System.Windows.Forms.BindingSource(this.components);
+			this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.traitsDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.generationDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.probabilityDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -60,10 +71,15 @@
 			this.emptyTraitDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.dgvInputSeeds)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgvOutputSeeds)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-			this.splitContainer.Panel1.SuspendLayout();
-			this.splitContainer.Panel2.SuspendLayout();
-			this.splitContainer.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainerHorizontal)).BeginInit();
+			this.splitContainerHorizontal.Panel1.SuspendLayout();
+			this.splitContainerHorizontal.Panel2.SuspendLayout();
+			this.splitContainerHorizontal.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dgvCrossbreedInput)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).BeginInit();
+			this.splitContainerVertical.Panel1.SuspendLayout();
+			this.splitContainerVertical.Panel2.SuspendLayout();
+			this.splitContainerVertical.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.seedBindingSource)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -77,16 +93,16 @@
 			this.lblSeed.TabIndex = 1;
 			this.lblSeed.Text = "Seeds:";
 			// 
-			// btnAdd
+			// btnImport
 			// 
-			this.btnAdd.Location = new System.Drawing.Point(122, 73);
-			this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
-			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.Size = new System.Drawing.Size(115, 38);
-			this.btnAdd.TabIndex = 2;
-			this.btnAdd.Text = "Add";
-			this.btnAdd.UseVisualStyleBackColor = true;
-			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+			this.btnImport.Location = new System.Drawing.Point(122, 73);
+			this.btnImport.Margin = new System.Windows.Forms.Padding(4);
+			this.btnImport.Name = "btnImport";
+			this.btnImport.Size = new System.Drawing.Size(115, 38);
+			this.btnImport.TabIndex = 2;
+			this.btnImport.Text = "Import";
+			this.btnImport.UseVisualStyleBackColor = true;
+			this.btnImport.Click += new System.EventHandler(this.btnImportSeeds_Click);
 			// 
 			// dgvInputSeeds
 			// 
@@ -110,11 +126,10 @@
 			this.dgvInputSeeds.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
 			this.dgvInputSeeds.Location = new System.Drawing.Point(0, 0);
 			this.dgvInputSeeds.Margin = new System.Windows.Forms.Padding(4);
-			this.dgvInputSeeds.MultiSelect = false;
 			this.dgvInputSeeds.Name = "dgvInputSeeds";
 			this.dgvInputSeeds.RowHeadersVisible = false;
 			this.dgvInputSeeds.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvInputSeeds.Size = new System.Drawing.Size(852, 221);
+			this.dgvInputSeeds.Size = new System.Drawing.Size(807, 520);
 			this.dgvInputSeeds.TabIndex = 3;
 			this.dgvInputSeeds.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvSeeds_DataBindingComplete);
 			// 
@@ -144,14 +159,14 @@
 			this.dgvOutputSeeds.Name = "dgvOutputSeeds";
 			this.dgvOutputSeeds.RowHeadersVisible = false;
 			this.dgvOutputSeeds.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvOutputSeeds.Size = new System.Drawing.Size(852, 217);
+			this.dgvOutputSeeds.Size = new System.Drawing.Size(841, 256);
 			this.dgvOutputSeeds.TabIndex = 4;
 			this.dgvOutputSeeds.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvSeeds_DataBindingComplete);
 			// 
 			// btnCrossBreed
 			// 
-			this.btnCrossBreed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCrossBreed.Location = new System.Drawing.Point(751, 579);
+			this.btnCrossBreed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCrossBreed.Location = new System.Drawing.Point(1551, 73);
 			this.btnCrossBreed.Margin = new System.Windows.Forms.Padding(4);
 			this.btnCrossBreed.Name = "btnCrossBreed";
 			this.btnCrossBreed.Size = new System.Drawing.Size(112, 38);
@@ -160,37 +175,16 @@
 			this.btnCrossBreed.UseVisualStyleBackColor = true;
 			this.btnCrossBreed.Click += new System.EventHandler(this.btnCrossBreed_Click);
 			// 
-			// lblIntendedOutput
+			// btnDelete
 			// 
-			this.lblIntendedOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblIntendedOutput.AutoSize = true;
-			this.lblIntendedOutput.Location = new System.Drawing.Point(520, 563);
-			this.lblIntendedOutput.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.lblIntendedOutput.Name = "lblIntendedOutput";
-			this.lblIntendedOutput.Size = new System.Drawing.Size(103, 21);
-			this.lblIntendedOutput.TabIndex = 7;
-			this.lblIntendedOutput.Text = "Output Traits:";
-			// 
-			// tbOutputTraits
-			// 
-			this.tbOutputTraits.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.tbOutputTraits.Location = new System.Drawing.Point(519, 588);
-			this.tbOutputTraits.Margin = new System.Windows.Forms.Padding(4);
-			this.tbOutputTraits.MaxLength = 6;
-			this.tbOutputTraits.Name = "tbOutputTraits";
-			this.tbOutputTraits.Size = new System.Drawing.Size(148, 29);
-			this.tbOutputTraits.TabIndex = 6;
-			// 
-			// btnRemove
-			// 
-			this.btnRemove.Location = new System.Drawing.Point(245, 73);
-			this.btnRemove.Margin = new System.Windows.Forms.Padding(4);
-			this.btnRemove.Name = "btnRemove";
-			this.btnRemove.Size = new System.Drawing.Size(112, 38);
-			this.btnRemove.TabIndex = 8;
-			this.btnRemove.Text = "Remove";
-			this.btnRemove.UseVisualStyleBackColor = true;
-			this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+			this.btnDelete.Location = new System.Drawing.Point(245, 73);
+			this.btnDelete.Margin = new System.Windows.Forms.Padding(4);
+			this.btnDelete.Name = "btnDelete";
+			this.btnDelete.Size = new System.Drawing.Size(112, 38);
+			this.btnDelete.TabIndex = 8;
+			this.btnDelete.Text = "Delete";
+			this.btnDelete.UseVisualStyleBackColor = true;
+			this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
 			// 
 			// rtbSeeds
 			// 
@@ -201,25 +195,94 @@
 			this.rtbSeeds.TabIndex = 9;
 			this.rtbSeeds.Text = "";
 			// 
-			// splitContainer
+			// splitContainerHorizontal
 			// 
-			this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.splitContainerHorizontal.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainerHorizontal.Location = new System.Drawing.Point(0, 0);
+			this.splitContainerHorizontal.Name = "splitContainerHorizontal";
+			this.splitContainerHorizontal.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// splitContainerHorizontal.Panel1
+			// 
+			this.splitContainerHorizontal.Panel1.Controls.Add(this.dgvCrossbreedInput);
+			// 
+			// splitContainerHorizontal.Panel2
+			// 
+			this.splitContainerHorizontal.Panel2.Controls.Add(this.dgvOutputSeeds);
+			this.splitContainerHorizontal.Size = new System.Drawing.Size(841, 520);
+			this.splitContainerHorizontal.SplitterDistance = 260;
+			this.splitContainerHorizontal.TabIndex = 10;
+			// 
+			// dgvCrossbreedInput
+			// 
+			this.dgvCrossbreedInput.AllowUserToAddRows = false;
+			this.dgvCrossbreedInput.AllowUserToDeleteRows = false;
+			this.dgvCrossbreedInput.AllowUserToOrderColumns = true;
+			this.dgvCrossbreedInput.AllowUserToResizeRows = false;
+			this.dgvCrossbreedInput.AutoGenerateColumns = false;
+			this.dgvCrossbreedInput.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dgvCrossbreedInput.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2,
+            this.dataGridViewTextBoxColumn3,
+            this.dataGridViewTextBoxColumn4,
+            this.dataGridViewTextBoxColumn5,
+            this.dataGridViewTextBoxColumn6,
+            this.dataGridViewTextBoxColumn7,
+            this.dataGridViewTextBoxColumn8});
+			this.dgvCrossbreedInput.DataSource = this.seedBindingSource;
+			this.dgvCrossbreedInput.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.dgvCrossbreedInput.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+			this.dgvCrossbreedInput.Location = new System.Drawing.Point(0, 0);
+			this.dgvCrossbreedInput.Margin = new System.Windows.Forms.Padding(4);
+			this.dgvCrossbreedInput.Name = "dgvCrossbreedInput";
+			this.dgvCrossbreedInput.RowHeadersVisible = false;
+			this.dgvCrossbreedInput.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+			this.dgvCrossbreedInput.Size = new System.Drawing.Size(841, 260);
+			this.dgvCrossbreedInput.TabIndex = 11;
+			this.dgvCrossbreedInput.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvSeeds_DataBindingComplete);
+			// 
+			// splitContainerVertical
+			// 
+			this.splitContainerVertical.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.splitContainer.Location = new System.Drawing.Point(12, 118);
-			this.splitContainer.Name = "splitContainer";
-			this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			this.splitContainerVertical.Location = new System.Drawing.Point(12, 121);
+			this.splitContainerVertical.Name = "splitContainerVertical";
 			// 
-			// splitContainer.Panel1
+			// splitContainerVertical.Panel1
 			// 
-			this.splitContainer.Panel1.Controls.Add(this.dgvInputSeeds);
+			this.splitContainerVertical.Panel1.Controls.Add(this.dgvInputSeeds);
 			// 
-			// splitContainer.Panel2
+			// splitContainerVertical.Panel2
 			// 
-			this.splitContainer.Panel2.Controls.Add(this.dgvOutputSeeds);
-			this.splitContainer.Size = new System.Drawing.Size(852, 442);
-			this.splitContainer.SplitterDistance = 221;
-			this.splitContainer.TabIndex = 10;
+			this.splitContainerVertical.Panel2.Controls.Add(this.splitContainerHorizontal);
+			this.splitContainerVertical.Size = new System.Drawing.Size(1652, 520);
+			this.splitContainerVertical.SplitterDistance = 807;
+			this.splitContainerVertical.TabIndex = 12;
+			// 
+			// btnAdd
+			// 
+			this.btnAdd.Location = new System.Drawing.Point(365, 73);
+			this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
+			this.btnAdd.Name = "btnAdd";
+			this.btnAdd.Size = new System.Drawing.Size(112, 38);
+			this.btnAdd.TabIndex = 13;
+			this.btnAdd.Text = "Add";
+			this.btnAdd.UseVisualStyleBackColor = true;
+			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+			// 
+			// btnRemove
+			// 
+			this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnRemove.Location = new System.Drawing.Point(1431, 73);
+			this.btnRemove.Margin = new System.Windows.Forms.Padding(4);
+			this.btnRemove.Name = "btnRemove";
+			this.btnRemove.Size = new System.Drawing.Size(112, 38);
+			this.btnRemove.TabIndex = 14;
+			this.btnRemove.Text = "Remove";
+			this.btnRemove.UseVisualStyleBackColor = true;
+			this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
 			// 
 			// traitsDataGridViewTextBoxColumn
 			// 
@@ -280,6 +343,61 @@
 			// 
 			this.seedBindingSource.DataSource = typeof(RustCrossbreeder.Data.Seed);
 			// 
+			// dataGridViewTextBoxColumn1
+			// 
+			this.dataGridViewTextBoxColumn1.DataPropertyName = "Traits";
+			dataGridViewCellStyle3.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold);
+			this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle3;
+			this.dataGridViewTextBoxColumn1.HeaderText = "Traits";
+			this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+			// 
+			// dataGridViewTextBoxColumn2
+			// 
+			this.dataGridViewTextBoxColumn2.DataPropertyName = "Generation";
+			this.dataGridViewTextBoxColumn2.HeaderText = "Generation";
+			this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+			// 
+			// dataGridViewTextBoxColumn3
+			// 
+			this.dataGridViewTextBoxColumn3.DataPropertyName = "Probability";
+			this.dataGridViewTextBoxColumn3.HeaderText = "Probability";
+			this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+			// 
+			// dataGridViewTextBoxColumn4
+			// 
+			this.dataGridViewTextBoxColumn4.DataPropertyName = "Growth";
+			this.dataGridViewTextBoxColumn4.HeaderText = "Growth";
+			this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+			this.dataGridViewTextBoxColumn4.ReadOnly = true;
+			// 
+			// dataGridViewTextBoxColumn5
+			// 
+			this.dataGridViewTextBoxColumn5.DataPropertyName = "Yield";
+			this.dataGridViewTextBoxColumn5.HeaderText = "Yield";
+			this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+			this.dataGridViewTextBoxColumn5.ReadOnly = true;
+			// 
+			// dataGridViewTextBoxColumn6
+			// 
+			this.dataGridViewTextBoxColumn6.DataPropertyName = "Hardiness";
+			this.dataGridViewTextBoxColumn6.HeaderText = "Hardiness";
+			this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+			this.dataGridViewTextBoxColumn6.ReadOnly = true;
+			// 
+			// dataGridViewTextBoxColumn7
+			// 
+			this.dataGridViewTextBoxColumn7.DataPropertyName = "WaterNeed";
+			this.dataGridViewTextBoxColumn7.HeaderText = "WaterNeed";
+			this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+			this.dataGridViewTextBoxColumn7.ReadOnly = true;
+			// 
+			// dataGridViewTextBoxColumn8
+			// 
+			this.dataGridViewTextBoxColumn8.DataPropertyName = "EmptyTrait";
+			this.dataGridViewTextBoxColumn8.HeaderText = "EmptyTrait";
+			this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+			this.dataGridViewTextBoxColumn8.ReadOnly = true;
+			// 
 			// traitsDataGridViewTextBoxColumn1
 			// 
 			this.traitsDataGridViewTextBoxColumn1.DataPropertyName = "Traits";
@@ -339,14 +457,14 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(876, 630);
-			this.Controls.Add(this.splitContainer);
-			this.Controls.Add(this.rtbSeeds);
+			this.ClientSize = new System.Drawing.Size(1676, 711);
 			this.Controls.Add(this.btnRemove);
-			this.Controls.Add(this.lblIntendedOutput);
-			this.Controls.Add(this.tbOutputTraits);
-			this.Controls.Add(this.btnCrossBreed);
 			this.Controls.Add(this.btnAdd);
+			this.Controls.Add(this.splitContainerVertical);
+			this.Controls.Add(this.rtbSeeds);
+			this.Controls.Add(this.btnDelete);
+			this.Controls.Add(this.btnCrossBreed);
+			this.Controls.Add(this.btnImport);
 			this.Controls.Add(this.lblSeed);
 			this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Margin = new System.Windows.Forms.Padding(4);
@@ -354,10 +472,15 @@
 			this.Text = "Rust Crossbreeder";
 			((System.ComponentModel.ISupportInitialize)(this.dgvInputSeeds)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgvOutputSeeds)).EndInit();
-			this.splitContainer.Panel1.ResumeLayout(false);
-			this.splitContainer.Panel2.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-			this.splitContainer.ResumeLayout(false);
+			this.splitContainerHorizontal.Panel1.ResumeLayout(false);
+			this.splitContainerHorizontal.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainerHorizontal)).EndInit();
+			this.splitContainerHorizontal.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.dgvCrossbreedInput)).EndInit();
+			this.splitContainerVertical.Panel1.ResumeLayout(false);
+			this.splitContainerVertical.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).EndInit();
+			this.splitContainerVertical.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.seedBindingSource)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -366,13 +489,11 @@
 
 		#endregion
 		private System.Windows.Forms.Label lblSeed;
-		private System.Windows.Forms.Button btnAdd;
+		private System.Windows.Forms.Button btnImport;
 		private System.Windows.Forms.DataGridView dgvInputSeeds;
 		private System.Windows.Forms.DataGridView dgvOutputSeeds;
 		private System.Windows.Forms.Button btnCrossBreed;
-		private System.Windows.Forms.Label lblIntendedOutput;
-		private System.Windows.Forms.TextBox tbOutputTraits;
-		private System.Windows.Forms.Button btnRemove;
+		private System.Windows.Forms.Button btnDelete;
 		private System.Windows.Forms.RichTextBox rtbSeeds;
 		private System.Windows.Forms.BindingSource seedBindingSource;
 		private System.Windows.Forms.DataGridViewTextBoxColumn traitsDataGridViewTextBoxColumn1;
@@ -391,7 +512,19 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn hardinessDataGridViewTextBoxColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn waterNeedDataGridViewTextBoxColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn emptyTraitDataGridViewTextBoxColumn;
-		private System.Windows.Forms.SplitContainer splitContainer;
+		private System.Windows.Forms.SplitContainer splitContainerHorizontal;
+		private System.Windows.Forms.DataGridView dgvCrossbreedInput;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
+		private System.Windows.Forms.SplitContainer splitContainerVertical;
+		private System.Windows.Forms.Button btnAdd;
+		private System.Windows.Forms.Button btnRemove;
 	}
 }
 

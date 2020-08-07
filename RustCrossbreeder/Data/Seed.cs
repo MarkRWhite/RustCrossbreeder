@@ -96,9 +96,16 @@ namespace RustCrossbreeder.Data
 
 		#endregion
 
-		#region Private Methods
+		#region Public Methods
 
-
+		/// <summary>
+		/// Create a deep copy of this seed
+		/// </summary>
+		/// <returns></returns>
+		public Seed DeepCopy()
+		{
+			return new Seed(this.Traits, this.Generation, this.ParentSeeds, this.Probability);
+		}
 
 		#endregion
 	}
