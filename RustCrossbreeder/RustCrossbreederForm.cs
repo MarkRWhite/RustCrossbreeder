@@ -184,6 +184,9 @@ namespace RustCrossbreeder
 		{
 			this.dgvInputSeeds.DataSource = this._seedManager.ViewInputSeeds();
 			this.dgvOutputSeeds.DataSource = _outputSeedsDisplayDataSource;
+
+			this.dgvInputSeeds.ClearSelection();
+			this.dgvOutputSeeds.ClearSelection();
 		}
 
 		/// <summary>

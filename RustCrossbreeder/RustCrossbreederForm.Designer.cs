@@ -29,8 +29,8 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.lblSeed = new System.Windows.Forms.Label();
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.dgvInputSeeds = new System.Windows.Forms.DataGridView();
@@ -40,15 +40,7 @@
 			this.tbOutputTraits = new System.Windows.Forms.TextBox();
 			this.btnRemove = new System.Windows.Forms.Button();
 			this.rtbSeeds = new System.Windows.Forms.RichTextBox();
-			this.traitsDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.generationDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.probabilityDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.growthDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.yieldDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.hardinessDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.waterNeedDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.emptyTraitDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.seedBindingSource = new System.Windows.Forms.BindingSource(this.components);
+			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.traitsDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.generationDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.probabilityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -57,8 +49,21 @@
 			this.hardinessDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.waterNeedDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.emptyTraitDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.seedBindingSource = new System.Windows.Forms.BindingSource(this.components);
+			this.traitsDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.generationDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.probabilityDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.growthDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.yieldDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.hardinessDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.waterNeedDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.emptyTraitDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.dgvInputSeeds)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgvOutputSeeds)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+			this.splitContainer.Panel1.SuspendLayout();
+			this.splitContainer.Panel2.SuspendLayout();
+			this.splitContainer.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.seedBindingSource)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -89,8 +94,6 @@
 			this.dgvInputSeeds.AllowUserToDeleteRows = false;
 			this.dgvInputSeeds.AllowUserToOrderColumns = true;
 			this.dgvInputSeeds.AllowUserToResizeRows = false;
-			this.dgvInputSeeds.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.dgvInputSeeds.AutoGenerateColumns = false;
 			this.dgvInputSeeds.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dgvInputSeeds.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -103,14 +106,15 @@
             this.waterNeedDataGridViewTextBoxColumn,
             this.emptyTraitDataGridViewTextBoxColumn});
 			this.dgvInputSeeds.DataSource = this.seedBindingSource;
+			this.dgvInputSeeds.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dgvInputSeeds.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-			this.dgvInputSeeds.Location = new System.Drawing.Point(13, 119);
+			this.dgvInputSeeds.Location = new System.Drawing.Point(0, 0);
 			this.dgvInputSeeds.Margin = new System.Windows.Forms.Padding(4);
 			this.dgvInputSeeds.MultiSelect = false;
 			this.dgvInputSeeds.Name = "dgvInputSeeds";
 			this.dgvInputSeeds.RowHeadersVisible = false;
 			this.dgvInputSeeds.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvInputSeeds.Size = new System.Drawing.Size(850, 203);
+			this.dgvInputSeeds.Size = new System.Drawing.Size(852, 221);
 			this.dgvInputSeeds.TabIndex = 3;
 			this.dgvInputSeeds.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvSeeds_DataBindingComplete);
 			// 
@@ -120,9 +124,6 @@
 			this.dgvOutputSeeds.AllowUserToDeleteRows = false;
 			this.dgvOutputSeeds.AllowUserToOrderColumns = true;
 			this.dgvOutputSeeds.AllowUserToResizeRows = false;
-			this.dgvOutputSeeds.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.dgvOutputSeeds.AutoGenerateColumns = false;
 			this.dgvOutputSeeds.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dgvOutputSeeds.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -135,14 +136,15 @@
             this.waterNeedDataGridViewTextBoxColumn1,
             this.emptyTraitDataGridViewTextBoxColumn1});
 			this.dgvOutputSeeds.DataSource = this.seedBindingSource;
+			this.dgvOutputSeeds.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dgvOutputSeeds.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-			this.dgvOutputSeeds.Location = new System.Drawing.Point(13, 330);
+			this.dgvOutputSeeds.Location = new System.Drawing.Point(0, 0);
 			this.dgvOutputSeeds.Margin = new System.Windows.Forms.Padding(4);
 			this.dgvOutputSeeds.MultiSelect = false;
 			this.dgvOutputSeeds.Name = "dgvOutputSeeds";
 			this.dgvOutputSeeds.RowHeadersVisible = false;
 			this.dgvOutputSeeds.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvOutputSeeds.Size = new System.Drawing.Size(850, 221);
+			this.dgvOutputSeeds.Size = new System.Drawing.Size(852, 217);
 			this.dgvOutputSeeds.TabIndex = 4;
 			this.dgvOutputSeeds.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvSeeds_DataBindingComplete);
 			// 
@@ -199,64 +201,25 @@
 			this.rtbSeeds.TabIndex = 9;
 			this.rtbSeeds.Text = "";
 			// 
-			// traitsDataGridViewTextBoxColumn1
+			// splitContainer
 			// 
-			this.traitsDataGridViewTextBoxColumn1.DataPropertyName = "Traits";
-			dataGridViewCellStyle2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold);
-			this.traitsDataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle2;
-			this.traitsDataGridViewTextBoxColumn1.HeaderText = "Traits";
-			this.traitsDataGridViewTextBoxColumn1.Name = "traitsDataGridViewTextBoxColumn1";
+			this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.splitContainer.Location = new System.Drawing.Point(12, 118);
+			this.splitContainer.Name = "splitContainer";
+			this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			// 
-			// generationDataGridViewTextBoxColumn1
+			// splitContainer.Panel1
 			// 
-			this.generationDataGridViewTextBoxColumn1.DataPropertyName = "Generation";
-			this.generationDataGridViewTextBoxColumn1.HeaderText = "Generation";
-			this.generationDataGridViewTextBoxColumn1.Name = "generationDataGridViewTextBoxColumn1";
+			this.splitContainer.Panel1.Controls.Add(this.dgvInputSeeds);
 			// 
-			// probabilityDataGridViewTextBoxColumn1
+			// splitContainer.Panel2
 			// 
-			this.probabilityDataGridViewTextBoxColumn1.DataPropertyName = "Probability";
-			this.probabilityDataGridViewTextBoxColumn1.HeaderText = "Probability";
-			this.probabilityDataGridViewTextBoxColumn1.Name = "probabilityDataGridViewTextBoxColumn1";
-			// 
-			// growthDataGridViewTextBoxColumn1
-			// 
-			this.growthDataGridViewTextBoxColumn1.DataPropertyName = "Growth";
-			this.growthDataGridViewTextBoxColumn1.HeaderText = "Growth";
-			this.growthDataGridViewTextBoxColumn1.Name = "growthDataGridViewTextBoxColumn1";
-			this.growthDataGridViewTextBoxColumn1.ReadOnly = true;
-			// 
-			// yieldDataGridViewTextBoxColumn1
-			// 
-			this.yieldDataGridViewTextBoxColumn1.DataPropertyName = "Yield";
-			this.yieldDataGridViewTextBoxColumn1.HeaderText = "Yield";
-			this.yieldDataGridViewTextBoxColumn1.Name = "yieldDataGridViewTextBoxColumn1";
-			this.yieldDataGridViewTextBoxColumn1.ReadOnly = true;
-			// 
-			// hardinessDataGridViewTextBoxColumn1
-			// 
-			this.hardinessDataGridViewTextBoxColumn1.DataPropertyName = "Hardiness";
-			this.hardinessDataGridViewTextBoxColumn1.HeaderText = "Hardiness";
-			this.hardinessDataGridViewTextBoxColumn1.Name = "hardinessDataGridViewTextBoxColumn1";
-			this.hardinessDataGridViewTextBoxColumn1.ReadOnly = true;
-			// 
-			// waterNeedDataGridViewTextBoxColumn1
-			// 
-			this.waterNeedDataGridViewTextBoxColumn1.DataPropertyName = "WaterNeed";
-			this.waterNeedDataGridViewTextBoxColumn1.HeaderText = "WaterNeed";
-			this.waterNeedDataGridViewTextBoxColumn1.Name = "waterNeedDataGridViewTextBoxColumn1";
-			this.waterNeedDataGridViewTextBoxColumn1.ReadOnly = true;
-			// 
-			// emptyTraitDataGridViewTextBoxColumn1
-			// 
-			this.emptyTraitDataGridViewTextBoxColumn1.DataPropertyName = "EmptyTrait";
-			this.emptyTraitDataGridViewTextBoxColumn1.HeaderText = "EmptyTrait";
-			this.emptyTraitDataGridViewTextBoxColumn1.Name = "emptyTraitDataGridViewTextBoxColumn1";
-			this.emptyTraitDataGridViewTextBoxColumn1.ReadOnly = true;
-			// 
-			// seedBindingSource
-			// 
-			this.seedBindingSource.DataSource = typeof(RustCrossbreeder.Data.Seed);
+			this.splitContainer.Panel2.Controls.Add(this.dgvOutputSeeds);
+			this.splitContainer.Size = new System.Drawing.Size(852, 442);
+			this.splitContainer.SplitterDistance = 221;
+			this.splitContainer.TabIndex = 10;
 			// 
 			// traitsDataGridViewTextBoxColumn
 			// 
@@ -313,18 +276,76 @@
 			this.emptyTraitDataGridViewTextBoxColumn.Name = "emptyTraitDataGridViewTextBoxColumn";
 			this.emptyTraitDataGridViewTextBoxColumn.ReadOnly = true;
 			// 
+			// seedBindingSource
+			// 
+			this.seedBindingSource.DataSource = typeof(RustCrossbreeder.Data.Seed);
+			// 
+			// traitsDataGridViewTextBoxColumn1
+			// 
+			this.traitsDataGridViewTextBoxColumn1.DataPropertyName = "Traits";
+			dataGridViewCellStyle2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold);
+			this.traitsDataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle2;
+			this.traitsDataGridViewTextBoxColumn1.HeaderText = "Traits";
+			this.traitsDataGridViewTextBoxColumn1.Name = "traitsDataGridViewTextBoxColumn1";
+			// 
+			// generationDataGridViewTextBoxColumn1
+			// 
+			this.generationDataGridViewTextBoxColumn1.DataPropertyName = "Generation";
+			this.generationDataGridViewTextBoxColumn1.HeaderText = "Generation";
+			this.generationDataGridViewTextBoxColumn1.Name = "generationDataGridViewTextBoxColumn1";
+			// 
+			// probabilityDataGridViewTextBoxColumn1
+			// 
+			this.probabilityDataGridViewTextBoxColumn1.DataPropertyName = "Probability";
+			this.probabilityDataGridViewTextBoxColumn1.HeaderText = "Probability";
+			this.probabilityDataGridViewTextBoxColumn1.Name = "probabilityDataGridViewTextBoxColumn1";
+			// 
+			// growthDataGridViewTextBoxColumn1
+			// 
+			this.growthDataGridViewTextBoxColumn1.DataPropertyName = "Growth";
+			this.growthDataGridViewTextBoxColumn1.HeaderText = "Growth";
+			this.growthDataGridViewTextBoxColumn1.Name = "growthDataGridViewTextBoxColumn1";
+			this.growthDataGridViewTextBoxColumn1.ReadOnly = true;
+			// 
+			// yieldDataGridViewTextBoxColumn1
+			// 
+			this.yieldDataGridViewTextBoxColumn1.DataPropertyName = "Yield";
+			this.yieldDataGridViewTextBoxColumn1.HeaderText = "Yield";
+			this.yieldDataGridViewTextBoxColumn1.Name = "yieldDataGridViewTextBoxColumn1";
+			this.yieldDataGridViewTextBoxColumn1.ReadOnly = true;
+			// 
+			// hardinessDataGridViewTextBoxColumn1
+			// 
+			this.hardinessDataGridViewTextBoxColumn1.DataPropertyName = "Hardiness";
+			this.hardinessDataGridViewTextBoxColumn1.HeaderText = "Hardiness";
+			this.hardinessDataGridViewTextBoxColumn1.Name = "hardinessDataGridViewTextBoxColumn1";
+			this.hardinessDataGridViewTextBoxColumn1.ReadOnly = true;
+			// 
+			// waterNeedDataGridViewTextBoxColumn1
+			// 
+			this.waterNeedDataGridViewTextBoxColumn1.DataPropertyName = "WaterNeed";
+			this.waterNeedDataGridViewTextBoxColumn1.HeaderText = "WaterNeed";
+			this.waterNeedDataGridViewTextBoxColumn1.Name = "waterNeedDataGridViewTextBoxColumn1";
+			this.waterNeedDataGridViewTextBoxColumn1.ReadOnly = true;
+			// 
+			// emptyTraitDataGridViewTextBoxColumn1
+			// 
+			this.emptyTraitDataGridViewTextBoxColumn1.DataPropertyName = "EmptyTrait";
+			this.emptyTraitDataGridViewTextBoxColumn1.HeaderText = "EmptyTrait";
+			this.emptyTraitDataGridViewTextBoxColumn1.Name = "emptyTraitDataGridViewTextBoxColumn1";
+			this.emptyTraitDataGridViewTextBoxColumn1.ReadOnly = true;
+			// 
 			// RustCrossbreederForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(876, 630);
+			this.Controls.Add(this.splitContainer);
 			this.Controls.Add(this.rtbSeeds);
 			this.Controls.Add(this.btnRemove);
 			this.Controls.Add(this.lblIntendedOutput);
 			this.Controls.Add(this.tbOutputTraits);
 			this.Controls.Add(this.btnCrossBreed);
-			this.Controls.Add(this.dgvOutputSeeds);
-			this.Controls.Add(this.dgvInputSeeds);
 			this.Controls.Add(this.btnAdd);
 			this.Controls.Add(this.lblSeed);
 			this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -333,6 +354,10 @@
 			this.Text = "Rust Crossbreeder";
 			((System.ComponentModel.ISupportInitialize)(this.dgvInputSeeds)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgvOutputSeeds)).EndInit();
+			this.splitContainer.Panel1.ResumeLayout(false);
+			this.splitContainer.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+			this.splitContainer.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.seedBindingSource)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -366,6 +391,7 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn hardinessDataGridViewTextBoxColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn waterNeedDataGridViewTextBoxColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn emptyTraitDataGridViewTextBoxColumn;
+		private System.Windows.Forms.SplitContainer splitContainer;
 	}
 }
 
