@@ -1,13 +1,10 @@
-﻿using System;
+﻿using RustCrossbreeder.Data;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using RustCrossbreeder.Data;
 
 namespace RustCrossbreeder
 {
@@ -127,7 +124,7 @@ namespace RustCrossbreeder
 			{
 				if (!string.IsNullOrWhiteSpace(line))
 				{
-					this._seedManager.AddSeed(new Seed(line));
+					this._seedManager.AddSeed(new Seed(line.ToUpper()));
 				}
 			}
 			
