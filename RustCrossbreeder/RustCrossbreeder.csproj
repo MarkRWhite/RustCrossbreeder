@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,9 +51,11 @@
   <ItemGroup>
     <Compile Include="Data\ISeedStore.cs" />
     <Compile Include="Data\Seed.cs" />
+    <Compile Include="Data\SeedDatabaseStore.cs" />
     <Compile Include="Data\SeedManager.cs" />
     <Compile Include="Data\SeedMemoryStore.cs" />
     <Compile Include="Data\Traits.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="RustCrossbreederForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,7 +76,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\DataSources\RustCrossbreeder.Data.Seed.datasource" />
+    <None Include="Properties\DataSources\RustCrossbreeder.Data.Seed1.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -85,6 +92,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DB\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Logging\logging.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

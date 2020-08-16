@@ -69,7 +69,12 @@ namespace RustCrossbreeder.Data
 
 		#endregion
 
-		#region Enums
+		#region Constants
+
+		/// <summary>
+		/// The amount of genetic traits that a plant has
+		/// </summary>
+		public const int TraitCount = 6;
 
 		#endregion
 

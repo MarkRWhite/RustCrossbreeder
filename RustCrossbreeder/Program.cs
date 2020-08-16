@@ -10,6 +10,8 @@ namespace RustCrossbreeder
 {
 	static class Program
 	{
+		#region Main
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
@@ -19,12 +21,14 @@ namespace RustCrossbreeder
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			ISeedStore seedStore = new SeedMemoryStore();
+			// Initialize Components
+			ISeedStore seedStore = new SeedMemoryStore(); // TODO: Implement SeedStore factory
 			var seedManager = new SeedManager(seedStore);
 
 			Application.Run(new RustCrossbreederForm(seedManager));
 		}
 
+		#endregion
 
 		#region Extension Methods
 

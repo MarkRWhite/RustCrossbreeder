@@ -11,7 +11,20 @@ namespace RustCrossbreeder.Data
 	{
 		#region Fields
 
+		/// <summary>
+		/// Retains seed information
+		/// </summary>
 		private ISeedStore _seedStore;
+
+		/// <summary>
+		/// The currently selected seed catalog
+		/// </summary>
+		private int _activeCatalogId;
+
+		/// <summary>
+		/// The currently selected seed type
+		/// </summary>
+		private Seed.SeedTypes _activeSeedType;
 
 		#endregion
 
@@ -119,18 +132,47 @@ namespace RustCrossbreeder.Data
 			var maxGeneration = seeds.Max(a => a.Generation);
 
 			// Initialize Dictionaries
-			Dictionary<char, decimal>[] traitSlots = new Dictionary<char, decimal>[6];
-			for (int i = 0; i < 6; i++)
+			Dictionary<char, decimal>[] traitSlots = new Dictionary<char, decimal>[Traits.TraitCount];
+			for (int i = 0; i < Traits.TraitCount; i++)
 			{
 				traitSlots[i] = new Dictionary<char, decimal>();
 			}
 
+			// Add Trait Weights to Dictionaries
+			this.CalculateTraitWeights(traitSlots, seeds);
+
+			// Trim the dictionary of any traits not tied for highest weight
+			this.SelectResultingTraits(traitSlots);
+
+			// Create all combinations of remaining seed traits as trait strings
+			var plantBuilder = new List<StringBuilder>();
+			plantBuilder.Add(new StringBuilder());
+
+			this.CreateResultingSeeds(traitSlots, plantBuilder);
+
+			// Construct seed objects for each result
+			foreach (var resultBuilder in plantBuilder)
+			{
+				resultSeeds.Add(new Seed(resultBuilder.ToString(), this._activeSeedType, this._activeCatalogId, maxGeneration+1, seeds, 1M / plantBuilder.Count) );
+			}
+
+			return resultSeeds.ToArray();
+		}
+
+		/// <summary>
+		/// Calculate and store the weights of each genetic trait in the corresponding trait dictionary
+		/// NOTE: Each trait has a weight associated with it (.6 for green traits, 1.0 for red traits).
+		/// </summary>
+		/// <param name="seeds"></param>
+		/// <param name="traitSlots"></param>
+		private void CalculateTraitWeights(Dictionary<char, decimal>[] traitSlots, Seed[] seeds)
+		{
 			// Add Trait weights to dictionaries
 			foreach (var seed in seeds)
 			{
-				for (int i = 0; i < 6; i++)
+				for (int i = 0; i < Traits.TraitCount; i++)
 				{
-					if ( traitSlots[i].ContainsKey(seed.Traits[i]) )
+					if (traitSlots[i].ContainsKey(seed.Traits[i]))
 					{
 						traitSlots[i][seed.Traits[i]] += Traits.GetWeight(seed.Traits[i]);
 					}
@@ -140,9 +182,17 @@ namespace RustCrossbreeder.Data
 					}
 				}
 			}
+		}
 
+		/// <summary>
+		/// Compare the weights of all traits in each dictionary and remove any traits which are not tied for the highest weight
+		/// NOTE: The resulting dictionaries contains only the resulting plant combinations for the specified input seeds
+		/// </summary>
+		/// <param name="traitSlots"></param>
+		private void SelectResultingTraits(Dictionary<char, decimal>[] traitSlots)
+		{
 			// Trim all traits not tied for first
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < Traits.TraitCount; i++)
 			{
 				var max = traitSlots[i].Values.Max();
 				foreach (var toRemove in traitSlots[i].Where(a => a.Value != max).ToList())
@@ -150,11 +200,15 @@ namespace RustCrossbreeder.Data
 					traitSlots[i].Remove(toRemove.Key);
 				}
 			}
+		}
 
-			// Create all combinations of remaining seed traits
-			var plantBuilder = new List<StringBuilder>();
-			plantBuilder.Add(new StringBuilder());
-
+		/// <summary>
+		/// Create a unique seed trait string for each possible seed trait combination
+		/// </summary>
+		/// <param name="traitSlots"></param>
+		/// <param name="plantBuilder"></param>
+		private void CreateResultingSeeds(Dictionary<char, decimal>[] traitSlots, List<StringBuilder> plantBuilder)
+		{
 			foreach (var slot in traitSlots)
 			{
 				// Create a new plant copy with the new trait letter appended and replace the original list
@@ -169,14 +223,6 @@ namespace RustCrossbreeder.Data
 
 				plantBuilder = tempBuilders.ToList();
 			}
-
-			// Compile results into objects
-			foreach (var resultBuilder in plantBuilder)
-			{
-				resultSeeds.Add(new Seed(resultBuilder.ToString(), maxGeneration+1, seeds, 1M / plantBuilder.Count) );
-			}
-
-			return resultSeeds.ToArray();
 		}
 
 		#endregion

@@ -7,14 +7,20 @@ using System.Threading.Tasks;
 namespace RustCrossbreeder.Data
 {
 	/// <summary>
-	/// An in-memory seed store
+	/// An in-memory seed store which will not retain seed information once the application is shut down
 	/// </summary>
 	public class SeedMemoryStore : ISeedStore
 	{
+		#region Fields
+
 		/// <summary>
 		/// The in-memory seed store
 		/// </summary>
 		private Dictionary<string, Seed> _seeds = new Dictionary<string, Seed>();
+
+		#endregion
+
+		#region Constructors
 
 		/// <summary>
 		/// Create a new instance of a SeedMemoryStore which stores seed information in memory
@@ -23,6 +29,10 @@ namespace RustCrossbreeder.Data
 		{
 
 		}
+
+		#endregion
+
+		#region Public Methods
 
 		public Seed[] GetSeeds()
 		{
@@ -49,5 +59,7 @@ namespace RustCrossbreeder.Data
 				_seeds.Remove(seed.Traits);
 			}
 		}
+
+		#endregion
 	}
 }

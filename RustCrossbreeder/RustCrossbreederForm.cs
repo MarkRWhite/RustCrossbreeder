@@ -32,66 +32,6 @@ namespace RustCrossbreeder
 
 		#endregion
 
-		#region Static Properties
-
-		/// <summary>
-		/// Defines if the Alignment of the data properties are positive or negative
-		/// </summary>
-		public static Dictionary<string, TraitAlignment> SeedPropertyAlignments =
-			new Dictionary<string, TraitAlignment>()
-			{
-				{ nameof(Seed.Growth), TraitAlignment.Positive },
-				{ nameof(Seed.Yield), TraitAlignment.Positive },
-				{ nameof(Seed.Hardiness), TraitAlignment.Positive },
-				{ nameof(Seed.WaterNeed), TraitAlignment.Negative },
-				{ nameof(Seed.EmptyTrait), TraitAlignment.Negative },
-			};
-
-		/// <summary>
-		/// Contains a Lookup Dictionary of Highlight colors to display in the Trait weights window
-		/// </summary>
-		public static Dictionary<int, Dictionary<TraitAlignment, Color>> TraitDisplayHighlights =
-			new Dictionary<int, Dictionary<TraitAlignment, Color>>()
-			{
-				{0, new Dictionary<TraitAlignment, Color>
-				{
-					{ TraitAlignment.Positive, Color.FromArgb(255,255,255)},
-					{ TraitAlignment.Negative, Color.FromArgb(255,255,255)},
-				} },
-				{1, new Dictionary<TraitAlignment, Color>
-				{
-					{ TraitAlignment.Positive, Color.FromArgb(220,255,220)},
-					{ TraitAlignment.Negative, Color.FromArgb(255,220,220)},
-				} },
-				{2, new Dictionary<TraitAlignment, Color>
-				{
-					{ TraitAlignment.Positive, Color.FromArgb(150,255,150)},
-					{ TraitAlignment.Negative, Color.FromArgb(255,150,150)},
-				} },
-				{3, new Dictionary<TraitAlignment, Color>
-				{
-					{ TraitAlignment.Positive, Color.FromArgb(100,255,100)},
-					{ TraitAlignment.Negative, Color.FromArgb(255,100,100)},
-				} },
-				{4, new Dictionary<TraitAlignment, Color>
-				{
-					{ TraitAlignment.Positive, Color.FromArgb(60,255,60)},
-					{ TraitAlignment.Negative, Color.FromArgb(255,60,60)},
-				} },
-				{5, new Dictionary<TraitAlignment, Color>
-				{
-					{ TraitAlignment.Positive, Color.FromArgb(30,255,30)},
-					{ TraitAlignment.Negative, Color.FromArgb(255,30,30)},
-				} },
-				{6, new Dictionary<TraitAlignment, Color>
-				{
-					{ TraitAlignment.Positive, Color.FromArgb(0,255,0)},
-					{ TraitAlignment.Negative, Color.FromArgb(255,0,0)},
-				} },
-			};
-
-		#endregion
-
 		#region Constructors
 
 		/// <summary>
@@ -122,9 +62,11 @@ namespace RustCrossbreeder
 		{
 			foreach (var line in rtbSeeds.Lines)
 			{
-				if (!string.IsNullOrWhiteSpace(line))
+				if (!string.IsNullOrWhiteSpace(line) && line.Length == Traits.TraitCount)
 				{
-					this._seedManager.AddSeed(new Seed(line.ToUpper()));
+					var seedType = (Seed.SeedTypes) Enum.Parse(typeof(Seed.SeedTypes), cmbSeedType.Text);
+					var catalogId = ((KeyValuePair<int,string>)this.cmbCatalog.SelectedItem).Key;
+					this._seedManager.AddSeed(new Seed(line.ToUpper(), seedType, catalogId));
 				}
 			}
 			
@@ -219,6 +161,16 @@ namespace RustCrossbreeder
 			this.UpdateDataSourceTraitHighlights((DataGridView)sender);
 		}
 
+		/// <summary>
+		/// Form Closing Event (Trigger form closing confirmation)
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void RustCrossbreederForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+
+		}
+
 		#endregion
 
 		#region Private Methods
@@ -274,6 +226,66 @@ namespace RustCrossbreeder
 
 		#endregion
 
+		#region Static Properties
+
+		/// <summary>
+		/// Defines if the Alignment of the data properties are positive or negative
+		/// </summary>
+		public static Dictionary<string, TraitAlignment> SeedPropertyAlignments =
+			new Dictionary<string, TraitAlignment>()
+			{
+				{ nameof(Seed.Growth), TraitAlignment.Positive },
+				{ nameof(Seed.Yield), TraitAlignment.Positive },
+				{ nameof(Seed.Hardiness), TraitAlignment.Positive },
+				{ nameof(Seed.WaterNeed), TraitAlignment.Negative },
+				{ nameof(Seed.EmptyTrait), TraitAlignment.Negative },
+			};
+
+		/// <summary>
+		/// Contains a Lookup Dictionary of Highlight colors to display in the Trait weights window
+		/// </summary>
+		public static Dictionary<int, Dictionary<TraitAlignment, Color>> TraitDisplayHighlights =
+			new Dictionary<int, Dictionary<TraitAlignment, Color>>()
+			{
+				{0, new Dictionary<TraitAlignment, Color>
+				{
+					{ TraitAlignment.Positive, Color.FromArgb(255,255,255)},
+					{ TraitAlignment.Negative, Color.FromArgb(255,255,255)},
+				} },
+				{1, new Dictionary<TraitAlignment, Color>
+				{
+					{ TraitAlignment.Positive, Color.FromArgb(220,255,220)},
+					{ TraitAlignment.Negative, Color.FromArgb(255,220,220)},
+				} },
+				{2, new Dictionary<TraitAlignment, Color>
+				{
+					{ TraitAlignment.Positive, Color.FromArgb(150,255,150)},
+					{ TraitAlignment.Negative, Color.FromArgb(255,150,150)},
+				} },
+				{3, new Dictionary<TraitAlignment, Color>
+				{
+					{ TraitAlignment.Positive, Color.FromArgb(100,255,100)},
+					{ TraitAlignment.Negative, Color.FromArgb(255,100,100)},
+				} },
+				{4, new Dictionary<TraitAlignment, Color>
+				{
+					{ TraitAlignment.Positive, Color.FromArgb(60,255,60)},
+					{ TraitAlignment.Negative, Color.FromArgb(255,60,60)},
+				} },
+				{5, new Dictionary<TraitAlignment, Color>
+				{
+					{ TraitAlignment.Positive, Color.FromArgb(30,255,30)},
+					{ TraitAlignment.Negative, Color.FromArgb(255,30,30)},
+				} },
+				{6, new Dictionary<TraitAlignment, Color>
+				{
+					{ TraitAlignment.Positive, Color.FromArgb(0,255,0)},
+					{ TraitAlignment.Negative, Color.FromArgb(255,0,0)},
+				} },
+			};
+
+		#endregion
+
 		#region Enums
 
 		/// <summary>
@@ -287,6 +299,5 @@ namespace RustCrossbreeder
 		}
 
 		#endregion
-
 	}
 }
