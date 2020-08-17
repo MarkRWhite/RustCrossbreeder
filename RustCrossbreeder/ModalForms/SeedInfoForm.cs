@@ -41,7 +41,7 @@ namespace RustCrossbreeder.ModalForms
 			this.txtGeneration.Text = seedInfo.Generation.ToString();
 			this.txtProbability.Text = seedInfo.Probability.ToString();
 
-			this.dgvSeedParents.DataSource = seedInfo.ParentSeeds;
+			this.dgvSeedParents.DataSource = new SortableBindingList<Seed>(seedInfo.ParentSeeds);
 		}
 
 		#endregion

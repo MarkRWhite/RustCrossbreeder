@@ -47,6 +47,11 @@ namespace RustCrossbreeder
 			this.dgvOutputSeeds.DoubleBuffered(true);
 			this.dgvCrossbreedInput.DoubleBuffered(true);
 
+			// Configure DataGridView column sorting
+			dgvInputSeeds.AutoGenerateColumns = false;
+			dgvOutputSeeds.AutoGenerateColumns = false;
+			dgvCrossbreedInput.AutoGenerateColumns = false;
+
 			// Hook SeedManager events
 			this._seedManager = seedManager;
 			this._seedManager.ActiveCatalogUpdated += HandleActiveCatalogUpdated;
@@ -271,7 +276,7 @@ namespace RustCrossbreeder
 		/// </summary>
 		private void RefreshInputDataSource()
 		{
-			this.dgvInputSeeds.DataSource = this._seedManager.GetActiveSeeds();
+			this.dgvInputSeeds.DataSource = new SortableBindingList<Seed>(this._seedManager.GetActiveSeeds());;
 			this.dgvInputSeeds.ClearSelection();
 		}
 
@@ -280,7 +285,7 @@ namespace RustCrossbreeder
 		/// </summary>
 		private void RefreshOutputDataSource()
 		{
-			this.dgvOutputSeeds.DataSource = _outputSeedsDisplayDataSource;
+			this.dgvOutputSeeds.DataSource = new SortableBindingList<Seed>(_outputSeedsDisplayDataSource);
 			this.dgvOutputSeeds.ClearSelection();
 		}
 
@@ -289,7 +294,7 @@ namespace RustCrossbreeder
 		/// </summary>
 		private void RefreshCrossBreederDataSource()
 		{
-			this.dgvCrossbreedInput.DataSource = _crossBreederInputDataSource.ToList();
+			this.dgvCrossbreedInput.DataSource = new SortableBindingList<Seed>(_crossBreederInputDataSource.ToList());
 			this.dgvCrossbreedInput.ClearSelection();
 		}
 

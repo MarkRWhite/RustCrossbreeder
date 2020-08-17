@@ -54,6 +54,7 @@
     <Compile Include="Data\SeedDatabaseStore.cs" />
     <Compile Include="Data\SeedManager.cs" />
     <Compile Include="Data\SeedMemoryStore.cs" />
+    <Compile Include="Data\SortableBindingList.cs" />
     <Compile Include="Data\Traits.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="ModalForms\SeedInfoForm.cs">
