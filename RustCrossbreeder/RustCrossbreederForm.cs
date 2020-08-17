@@ -18,7 +18,7 @@ namespace RustCrossbreeder
 		/// <summary>
 		/// The seed manager
 		/// </summary>
-		private SeedManager _seedManager;
+		private readonly SeedManager _seedManager;
 
 		/// <summary>
 		/// The DataSource for the crossbreeder input seed DataGridView
@@ -46,7 +46,16 @@ namespace RustCrossbreeder
 			this.dgvOutputSeeds.DoubleBuffered(true);
 			this.dgvCrossbreedInput.DoubleBuffered(true);
 
+			// Hook SeedManager events
 			this._seedManager = seedManager;
+			this._seedManager.ActiveCatalogUpdated += HandleActiveCatalogUpdated;
+			this._seedManager.ActiveSeedTypeUpdated += HandleActiveSeedTypeUpdated;
+			this._seedManager.CreateCatalog(cmbCatalog.Text);
+
+			// Set Combo box data sources
+			this.cmbSeedType.DataSource = Enum.GetNames(typeof(Seed.SeedTypes));
+			this.cmbCatalog.DataSource = this._seedManager.GetCatalogs().ToList();
+			this.cmbCatalog.DisplayMember = nameof(KeyValuePair<int, string>.Value); // Set display member to the Category string name
 		}
 
 		#endregion
@@ -64,7 +73,7 @@ namespace RustCrossbreeder
 			{
 				if (!string.IsNullOrWhiteSpace(line) && line.Length == Traits.TraitCount)
 				{
-					var seedType = (Seed.SeedTypes) Enum.Parse(typeof(Seed.SeedTypes), cmbSeedType.Text);
+					var seedType = (Seed.SeedTypes)Enum.Parse(typeof(Seed.SeedTypes), cmbSeedType.Text);
 					var catalogId = ((KeyValuePair<int,string>)this.cmbCatalog.SelectedItem).Key;
 					this._seedManager.AddSeed(new Seed(line.ToUpper(), seedType, catalogId));
 				}
@@ -121,7 +130,7 @@ namespace RustCrossbreeder
 				breedSeeds.Add((Seed)dgvCrossbreedInput.Rows[cell.RowIndex].DataBoundItem);
 			}
 
-			this._outputSeedsDisplayDataSource = this._seedManager.CrossbreedSeeds(breedSeeds.ToArray(), 1);
+			this._outputSeedsDisplayDataSource = this._seedManager.BreedSeeds(breedSeeds.ToArray());
 
 			this.RefreshOutputDataSource();
 		}
@@ -162,13 +171,68 @@ namespace RustCrossbreeder
 		}
 
 		/// <summary>
+		/// Auto-breed button pressed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnAutoBreed_Click(object sender, EventArgs e)
+		{
+			// TODO: Open auto-breed form, specify generations and max-parents.  display result count and allow import results to seed library
+
+			this._seedManager.AutoCrossbreedSeeds(this._seedManager.GetActiveSeeds(), 1, 4);
+			this.RefreshInputDataSource();
+		}
+
+		/// <summary>
+		/// Create new catalog ID link label clicked
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void linkLblCreateNew_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			// TODO: Create a new seed catalog with the name specified in the combo box
+			this._seedManager.CreateCatalog(cmbCatalog.Text);
+		}
+
+		/// <summary>
+		/// Seed Type Dropdown selected index changed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void cmbSeedType_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			// TODO: replace the DataGridView data sources with the seeds from the specified seed types (and catalogs)
+		}
+
+		/// <summary>
+		/// Catalog dropdown selected index changed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void cmbCatalog_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			this._seedManager.SetActiveCatalog(((KeyValuePair<int, string>) cmbCatalog.SelectedItem).Key);
+		}
+
+		/// <summary>
+		/// Seed cell double click
+		/// NOTE: This should trigger for any DataGridView containing seed information
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void dgvSeeds_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+		{
+			// TODO: Display modal user control form with seed information including parent information. Allow recursive parent lookup
+		}
+
+		/// <summary>
 		/// Form Closing Event (Trigger form closing confirmation)
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void RustCrossbreederForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-
+			// TODO: Implement form closing confirmation
 		}
 
 		#endregion
@@ -176,11 +240,31 @@ namespace RustCrossbreeder
 		#region Private Methods
 
 		/// <summary>
+		/// Handle an Active SeedType update event
+		/// </summary>
+		private void HandleActiveSeedTypeUpdated()
+		{
+			this.RefreshInputDataSource();
+			this.RefreshCrossBreederDataSource();
+			this.RefreshCrossBreederDataSource();
+		}
+
+		/// <summary>
+		/// Handle an Active Catalog update event
+		/// </summary>
+		private void HandleActiveCatalogUpdated()
+		{
+			this.RefreshInputDataSource();
+			this.RefreshCrossBreederDataSource();
+			this.RefreshCrossBreederDataSource();
+		}
+
+		/// <summary>
 		/// Update the InputSeed Data source with the input seeds from the Database
 		/// </summary>
 		private void RefreshInputDataSource()
 		{
-			this.dgvInputSeeds.DataSource = this._seedManager.ViewInputSeeds();
+			this.dgvInputSeeds.DataSource = this._seedManager.GetActiveSeeds();
 			this.dgvInputSeeds.ClearSelection();
 		}
 

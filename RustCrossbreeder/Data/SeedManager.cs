@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RustCrossbreeder.Logging;
 
 namespace RustCrossbreeder.Data
 {
@@ -25,6 +28,30 @@ namespace RustCrossbreeder.Data
 		/// The currently selected seed type
 		/// </summary>
 		private Seed.SeedTypes _activeSeedType;
+
+		/// <summary>
+		/// The minimum amount of parents required for a crossbreed
+		/// </summary>
+		private const int MinimumParents = 2;
+
+		/// <summary>
+		/// The hard maximum of parents that can be involved in a crossbreed.  This is limited by the slots in a large planter
+		/// </summary>
+		private const int MaximumParents = 8;
+
+		#endregion
+
+		#region Events
+
+		/// <summary>
+		/// Event that indicates that the active seed type has been updated
+		/// </summary>
+		public event Action ActiveSeedTypeUpdated;
+
+		/// <summary>
+		/// Event that indicates that the active catalog has updated
+		/// </summary>
+		public event Action ActiveCatalogUpdated;
 
 		#endregion
 
@@ -54,7 +81,7 @@ namespace RustCrossbreeder.Data
 		/// <summary>
 		/// Add an array of seeds to the SeedStore
 		/// </summary>
-		/// <param name="seed"></param>
+		/// <param name="seeds"></param>
 		public void AddSeed(IEnumerable<Seed> seeds)
 		{
 			foreach (var seed in seeds)
@@ -73,54 +100,60 @@ namespace RustCrossbreeder.Data
 		}
 
 		/// <summary>
-		/// Return a list of stored seeds
+		/// Return a list of stored seeds of the active type and catalog
 		/// </summary>
 		/// <returns></returns>
-		public Seed[] ViewInputSeeds()
+		public Seed[] GetActiveSeeds()
 		{
-			return this._seedStore.GetSeeds().Where(a => a.Generation == 0).ToArray();
-		}
-
-		public Seed[] ViewOutputSeeds()
-		{
-			return this._seedStore.GetSeeds().Where(a => a.Generation > 0).ToArray();
+			return this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId).ToArray();
 		}
 
 		/// <summary>
 		/// Crossbreed the seeds in the database for the specified amount of generations and return the result seeds
 		/// </summary>
 		/// <param name="seeds"></param>
-		/// <param name="generations"></param>
+		/// <param name="generations">The amount of generations to simulate</param>
+		/// <param name="maxParents">The maximum amount of parent seeds to breed with (max = 8 limited by size of large planter)</param>
 		/// <returns></returns>
-		public Seed[] CrossbreedSeeds(Seed[] seeds, int generations)
+		public void AutoCrossbreedSeeds(Seed[] seeds, int generations, int maxParents)
 		{
 			// Handle Null or Empty Input
 			if (seeds == null || seeds.Length == 0)
 			{
-				return null;
+				return;
 			}
 
-			var resultSeeds = new List<Seed>();
+			// Sanity check requested parent limit (limited by planter size)
+			if (maxParents > MaximumParents)
+			{
+				Logger.Instance.Log(Logger.Severity.Warning, $"{nameof(SeedManager)} exceeded maximum crossbreed seed limit {MaximumParents} parent seeds. attempted:{maxParents}");
+				maxParents = MaximumParents;
+			}
+
 			for (int i = 0; i < generations; i++)
 			{
-				// TODO: For each unique combination of seeds (using 3-8 seeds because of farm plot size) run the BreedSeeds method and store results as next generation
-
-				resultSeeds.AddRange( this.BreedSeeds(seeds) );
+				// Create all permutations of the seed array using the specified amount of parents
+				for (int parentAmount = MinimumParents; parentAmount <= maxParents; parentAmount++)
+				{
+					var parentArraysPermutations = GetPermutations(seeds, parentAmount);
+					foreach (var parentArray in parentArraysPermutations)
+					{
+						var result = this.BreedSeeds(parentArray.ToArray());
+						foreach (var seed in result)
+						{
+							this._seedStore.StoreSeed(seed);
+						}
+					}
+				}
 			}
-
-			return resultSeeds.ToArray();
 		}
-
-		#endregion
-
-		#region Private Methods
 
 		/// <summary>
 		/// Return a set of seeds that could be created from the input set of seeds
 		/// </summary>
 		/// <param name="seeds"></param>
 		/// <returns></returns>
-		private Seed[] BreedSeeds(Seed[] seeds)
+		public Seed[] BreedSeeds(Seed[] seeds)
 		{
 			// Handle Null or Empty Input
 			if (seeds == null || seeds.Length == 0)
@@ -148,16 +181,73 @@ namespace RustCrossbreeder.Data
 			var plantBuilder = new List<StringBuilder>();
 			plantBuilder.Add(new StringBuilder());
 
-			this.CreateResultingSeeds(traitSlots, plantBuilder);
+			// Create Resulting Seeds
+			foreach (var slot in traitSlots)
+			{
+				// Create a new plant copy with the new trait letter appended and replace the original list
+				var tempBuilders = new List<StringBuilder>();
+				foreach (var trait in slot)
+				{
+					foreach (var plant in plantBuilder.ToList())
+					{
+						tempBuilders.Add(new StringBuilder(plant + trait.Key.ToString()));
+					}
+				}
+
+				plantBuilder = tempBuilders.ToList();
+			}
 
 			// Construct seed objects for each result
 			foreach (var resultBuilder in plantBuilder)
 			{
-				resultSeeds.Add(new Seed(resultBuilder.ToString(), this._activeSeedType, this._activeCatalogId, maxGeneration+1, seeds, 1M / plantBuilder.Count) );
+				resultSeeds.Add(new Seed(resultBuilder.ToString(), this._activeSeedType, this._activeCatalogId, maxGeneration + 1, seeds, 1M / plantBuilder.Count));
 			}
 
 			return resultSeeds.ToArray();
 		}
+
+		/// <summary>
+		/// Return a dictionary of catalog names and ids from the seed store
+		/// </summary>
+		public Dictionary<int, string> GetCatalogs()
+		{
+			return this._seedStore.GetCatalogs();
+		}
+
+		/// <summary>
+		/// Create a new seed catalog in the data store
+		/// </summary>
+		/// <param name="catalogName"></param>
+		public void CreateCatalog(string catalogName)
+		{
+			_seedStore.CreateCatalog(catalogName);
+		}
+
+		/// <summary>
+		/// Set the active seed type in the current seed catalog
+		/// </summary>
+		/// <param name="seedType"></param>
+		public void SetActiveSeedType(Seed.SeedTypes seedType)
+		{
+			this._activeSeedType = seedType;
+
+			// TODO: Trigger data lookup and refresh
+		}
+
+		/// <summary>
+		/// Set the active seed catalog
+		/// </summary>
+		/// <param name="catalogId"></param>
+		public void SetActiveCatalog(int catalogId)
+		{
+			this._activeCatalogId = catalogId;
+
+			// TODO: Trigger data source lookup and refresh on the UI (maybe throw an updated event?)
+		}
+
+		#endregion
+
+		#region Private Methods
 
 		/// <summary>
 		/// Calculate and store the weights of each genetic trait in the corresponding trait dictionary
@@ -202,27 +292,21 @@ namespace RustCrossbreeder.Data
 			}
 		}
 
-		/// <summary>
-		/// Create a unique seed trait string for each possible seed trait combination
-		/// </summary>
-		/// <param name="traitSlots"></param>
-		/// <param name="plantBuilder"></param>
-		private void CreateResultingSeeds(Dictionary<char, decimal>[] traitSlots, List<StringBuilder> plantBuilder)
-		{
-			foreach (var slot in traitSlots)
-			{
-				// Create a new plant copy with the new trait letter appended and replace the original list
-				var tempBuilders = new List<StringBuilder>();
-				foreach (var trait in slot)
-				{
-					foreach (var plant in plantBuilder.ToList())
-					{
-						tempBuilders.Add(new StringBuilder(plant + trait.Key.ToString()));
-					}
-				}
+		#endregion
 
-				plantBuilder = tempBuilders.ToList();
-			}
+		#region Static Methods
+
+		/// <summary>
+		/// Get all permutations of the input list with the specified result array length
+		/// https://stackoverflow.com/questions/1952153/what-is-the-best-way-to-find-all-combinations-of-items-in-an-array/10629938#10629938
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		/// <param name="length"></param>
+		/// <returns></returns>
+		static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> list, int length)
+		{
+			return length == 1 ? list.Select(t => new T[] { t }) : GetPermutations(list, length - 1).SelectMany(t => list, (t1, t2) => t1.Concat(new T[] {t2}));
 		}
 
 		#endregion

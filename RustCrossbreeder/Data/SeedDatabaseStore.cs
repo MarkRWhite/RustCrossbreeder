@@ -32,12 +32,17 @@ namespace RustCrossbreeder.Data
 
 		#region Public Methods
 
-		public Seed[] GetSeeds()
+		public Seed[] GetSeeds(Seed.SeedTypes type, int catalogId)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Seed GetSeed(string traits)
+		public Seed[] GetSeeds(int catalogId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Seed GetSeed(Seed.SeedTypes type, int catalogId, string traits)
 		{
 			throw new NotImplementedException();
 		}
@@ -48,6 +53,21 @@ namespace RustCrossbreeder.Data
 		}
 
 		public void DeleteSeed(Seed seed)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Dictionary<int, string> GetCatalogs()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void CreateCatalog(string catalogName)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DeleteCatalog(int catalogId)
 		{
 			throw new NotImplementedException();
 		}

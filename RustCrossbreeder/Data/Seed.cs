@@ -12,6 +12,16 @@ namespace RustCrossbreeder.Data
 	/// </summary>
 	public class Seed
 	{
+		#region Static Fields
+
+		/// <summary>
+		/// An incrementing seed Id field which can be used to generate SeedIds
+		/// NOTE: SeedIds are generally created from the database but this allows the in-memory seed store to simulate creating unique seed Ids.
+		/// </summary>
+		private static int _nextSeedId = 1;
+
+		#endregion
+
 		#region Fields
 
 		/// <summary>
@@ -188,6 +198,18 @@ namespace RustCrossbreeder.Data
 			this.Probability = probability;
 		}
 
+		/// <summary>
+		/// Private constructor to create a Seed instance with a SeedId
+		/// NOTE: SeedIds are assigned to a seed as it is stored in the database.  This constructor allows the simulation of this assignment for the in-memory seed store
+		/// </summary>
+		/// <param name="seedId"></param>
+		/// <param name="baseSeed"></param>
+		private Seed(int seedId, Seed baseSeed)
+			: this(baseSeed.Traits, baseSeed.SeedType, baseSeed.CatalogId, baseSeed.Generation, baseSeed.ParentSeeds, baseSeed.Probability)
+		{
+			this.SeedId = seedId;
+		}
+
 		#endregion
 
 		#region Public Methods
@@ -200,6 +222,22 @@ namespace RustCrossbreeder.Data
 		public Seed DeepCopy()
 		{
 			return new Seed(this.Traits, this.SeedType, this.CatalogId, this.Generation, this.ParentSeeds, this.Probability);
+		}
+
+		#endregion
+
+		#region Static Methods
+
+		/// <summary>
+		/// Generate a new seed with the next unique Seed ID
+		/// NOTE: Seed Ids are automatically assigned by the identity operation of the database so this will only be used to mimic that behavior in the in-memory seed store
+		///		This also deep copies the seed so that changes to the reference do not edit the values in the simulated database.  (currently all properties are not public settable anyways) 
+		/// </summary>
+		/// <param name="seed"></param>
+		/// <returns></returns>
+		public static Seed GenerateNewSeedId(Seed seed)
+		{
+			return new Seed(_nextSeedId++, seed);
 		}
 
 		#endregion

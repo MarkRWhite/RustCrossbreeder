@@ -23,6 +23,12 @@ END
 
 GO
 
+IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_DeleteSeed') BEGIN
+	DROP PROCEDURE [dbo].[usp_DeleteSeed]
+END
+
+GO
+
 IF EXISTS (SELECT [name] FROM [sys].[types] WHERE [is_table_type] = 1 AND [name] = 'SeedTableType') BEGIN
 	DROP TYPE SeedTableType
 END
@@ -67,7 +73,7 @@ BEGIN
 			AND [CatalogId] = @CatalogId
 		)
 		BEGIN
-			IF (@tempProb >= @Probability AND @Generation <> 0) -- Generation 0 should always have 100% probability and overwrite further generations
+			IF (@tempProb >= @Probability)
 			BEGIN
 				SET @ReturnStatus = 1; RETURN -- Seed already exists with higher probability
 			END

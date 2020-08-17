@@ -18,11 +18,7 @@ GO
 --Use RustCrossbreeder Database
 USE [RustCrossbreeder];
 
-GO
-
------------------------------------------------
---Create Seeds Table
------------------------------------------------
+GO--------------------------------------------
 
 -- Create Seeds Table
 IF NOT EXISTS (SELECT [TABLE_NAME] FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_CATALOG] LIKE 'RustCrossbreeder' AND [TABLE_NAME] LIKE 'Seeds')
@@ -60,4 +56,14 @@ CREATE TABLE [RustCrossbreeder].[dbo].[SeedRelationships] (
 	[SeedId] int NOT NULL,
 	[ParentSeedId] int NOT NULL,
 	PRIMARY KEY ([SeedRelationshipId])
+);
+
+GO
+
+-- Create Catalogs Table
+IF NOT EXISTS (SELECT [TABLE_NAME] FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_CATALOG] LIKE 'RustCrossbreeder' AND [TABLE_NAME] LIKE 'Catalogs')
+CREATE TABLE [RustCrossbreeder].[dbo].[Catalogs] (
+	[CatalogId] int NOT NULL IDENTITY(1,1),
+	[Name] int NOT NULL,
+	PRIMARY KEY ([CatalogId])
 );
