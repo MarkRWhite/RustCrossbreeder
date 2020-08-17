@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using RustCrossbreeder.ModalForms;
 
 namespace RustCrossbreeder
 {
@@ -222,7 +223,13 @@ namespace RustCrossbreeder
 		/// <param name="e"></param>
 		private void dgvSeeds_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
-			// TODO: Display modal user control form with seed information including parent information. Allow recursive parent lookup
+			if (e.RowIndex == -1)
+			{
+				return;
+			}
+
+			var selectedSeed = (Seed)((DataGridView) sender).Rows[e.RowIndex].DataBoundItem;
+			new SeedInfoForm(selectedSeed).Show();
 		}
 
 		/// <summary>

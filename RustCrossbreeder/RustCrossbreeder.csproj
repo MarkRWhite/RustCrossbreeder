@@ -56,6 +56,12 @@
     <Compile Include="Data\SeedMemoryStore.cs" />
     <Compile Include="Data\Traits.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="ModalForms\SeedInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModalForms\SeedInfoForm.Designer.cs">
+      <DependentUpon>SeedInfoForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="RustCrossbreederForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +70,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ModalForms\SeedInfoForm.resx">
+      <DependentUpon>SeedInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RustCrossbreederForm.resx">
       <DependentUpon>RustCrossbreederForm.cs</DependentUpon>
     </EmbeddedResource>
