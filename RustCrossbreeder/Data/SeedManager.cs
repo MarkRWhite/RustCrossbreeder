@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using RustCrossbreeder.Logging;
 
 namespace RustCrossbreeder.Data
@@ -39,6 +40,11 @@ namespace RustCrossbreeder.Data
 		/// </summary>
 		private const int MaximumParents = 8;
 
+		/// <summary>
+		/// The worker thread used to process the auto crossbreed so that we don't hang up the UI thread while doing work
+		/// </summary>
+		private Thread _workerThread;
+
 		#endregion
 
 		#region Events
@@ -52,6 +58,11 @@ namespace RustCrossbreeder.Data
 		/// Event that indicates that the active catalog has updated
 		/// </summary>
 		public event Action ActiveCatalogUpdated;
+
+		/// <summary>
+		/// Signals that an AutoCrossBreed operation has finished
+		/// </summary>
+		public event Action AutoCrossBreedCompleted;
 
 		#endregion
 
@@ -109,43 +120,25 @@ namespace RustCrossbreeder.Data
 		}
 
 		/// <summary>
-		/// Crossbreed the seeds in the database for the specified amount of generations and return the result seeds
+		/// Start a new thread which will auto-crossbreed the specified seeds.  When results are done an event will trigger the input data source to update
 		/// </summary>
 		/// <param name="seeds"></param>
-		/// <param name="generations">The amount of generations to simulate</param>
-		/// <param name="maxParents">The maximum amount of parent seeds to breed with (max = 8 limited by size of large planter)</param>
-		/// <returns></returns>
-		public void AutoCrossbreedSeeds(Seed[] seeds, int generations, int maxParents)
+		/// <param name="generations"></param>
+		/// <param name="maxParents"></param>
+		public bool StartAutoCrossBreed(Seed[] seeds, int generations, int maxParents)
 		{
-			// Handle Null or Empty Input
-			if (seeds == null || seeds.Length == 0)
+			if (this._workerThread != null && this._workerThread.IsAlive)
 			{
-				return;
+				Logger.Instance.Log(Logger.Severity.Info, $"{nameof(SeedManager)} rejecting StartAutoCrossBreed request because worker thread is busy.");
+				return false;
 			}
 
-			// Sanity check requested parent limit (limited by planter size)
-			if (maxParents > MaximumParents)
-			{
-				Logger.Instance.Log(Logger.Severity.Warning, $"{nameof(SeedManager)} exceeded maximum crossbreed seed limit {MaximumParents} parent seeds. attempted:{maxParents}");
-				maxParents = MaximumParents;
-			}
+			Logger.Instance.Log(Logger.Severity.Info, $"{nameof(SeedManager)} starting AutoCrossBreed with {seeds.Length} seeds for {generations} generations and with {maxParents} max parents");
 
-			for (int i = 0; i < generations; i++)
-			{
-				// Create all permutations of the seed array using the specified amount of parents
-				for (int parentAmount = MinimumParents; parentAmount <= maxParents; parentAmount++)
-				{
-					var parentArraysPermutations = GetPermutations(seeds, parentAmount);
-					foreach (var parentArray in parentArraysPermutations)
-					{
-						var result = this.BreedSeeds(parentArray.ToArray());
-						foreach (var seed in result)
-						{
-							this._seedStore.StoreSeed(seed);
-						}
-					}
-				}
-			}
+			this._workerThread = new Thread(() => AutoCrossbreedSeeds(seeds, generations, maxParents)) { IsBackground = true };
+			this._workerThread.Start();
+
+			return true; // Successfully started worker thread
 		}
 
 		/// <summary>
@@ -248,6 +241,48 @@ namespace RustCrossbreeder.Data
 		#endregion
 
 		#region Private Methods
+
+		/// <summary>
+		/// Crossbreed the seeds in the database for the specified amount of generations and return the result seeds
+		/// </summary>
+		/// <param name="seeds"></param>
+		/// <param name="generations">The amount of generations to simulate</param>
+		/// <param name="maxParents">The maximum amount of parent seeds to breed with (max = 8 limited by size of large planter)</param>
+		/// <returns></returns>
+		private void AutoCrossbreedSeeds(Seed[] seeds, int generations, int maxParents)
+		{
+			// Handle Null or Empty Input
+			if (seeds == null || seeds.Length == 0)
+			{
+				return;
+			}
+
+			// Sanity check requested parent limit (limited by planter size)
+			if (maxParents > MaximumParents)
+			{
+				Logger.Instance.Log(Logger.Severity.Warning, $"{nameof(SeedManager)} exceeded maximum crossbreed seed limit {MaximumParents} parent seeds. attempted:{maxParents}");
+				maxParents = MaximumParents;
+			}
+
+			for (int i = 0; i < generations; i++)
+			{
+				// Create all permutations of the seed array using the specified amount of parents
+				for (int parentAmount = MinimumParents; parentAmount <= maxParents; parentAmount++)
+				{
+					var parentArraysPermutations = GetPermutations(seeds, parentAmount);
+					foreach (var parentArray in parentArraysPermutations)
+					{
+						var result = this.BreedSeeds(parentArray.ToArray());
+						foreach (var seed in result)
+						{
+							this._seedStore.StoreSeed(seed);
+						}
+					}
+				}
+			}
+
+			this.AutoCrossBreedCompleted.Invoke();
+		}
 
 		/// <summary>
 		/// Calculate and store the weights of each genetic trait in the corresponding trait dictionary

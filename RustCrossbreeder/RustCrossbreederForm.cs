@@ -56,6 +56,7 @@ namespace RustCrossbreeder
 			this._seedManager = seedManager;
 			this._seedManager.ActiveCatalogUpdated += HandleActiveCatalogUpdated;
 			this._seedManager.ActiveSeedTypeUpdated += HandleActiveSeedTypeUpdated;
+			this._seedManager.AutoCrossBreedCompleted += HandleAutoCrossBreedCompleted;
 			this._seedManager.CreateCatalog(cmbCatalog.Text);
 
 			// Set Combo box data sources
@@ -185,8 +186,9 @@ namespace RustCrossbreeder
 		{
 			// TODO: Open auto-breed form, specify generations and max-parents.  display result count and allow import results to seed library
 
-			this._seedManager.AutoCrossbreedSeeds(this._seedManager.GetActiveSeeds(), 1, 4);
-			this.RefreshInputDataSource();
+			this._seedManager.StartAutoCrossBreed(this._seedManager.GetActiveSeeds(), 1, 5);
+			this.btnAutoBreed.Enabled = false;
+			this.btnAutoBreed.Text = "Processing...";
 		}
 
 		/// <summary>
@@ -256,6 +258,12 @@ namespace RustCrossbreeder
 		/// </summary>
 		private void HandleActiveSeedTypeUpdated()
 		{
+			if (this.InvokeRequired)
+			{
+				this.Invoke((MethodInvoker)delegate { HandleActiveSeedTypeUpdated(); });
+				return;
+			}
+
 			this.RefreshInputDataSource();
 			this.RefreshCrossBreederDataSource();
 			this.RefreshCrossBreederDataSource();
@@ -266,9 +274,32 @@ namespace RustCrossbreeder
 		/// </summary>
 		private void HandleActiveCatalogUpdated()
 		{
+			if (this.InvokeRequired)
+			{
+				this.Invoke((MethodInvoker)delegate { HandleActiveCatalogUpdated(); });
+				return;
+			}
+
 			this.RefreshInputDataSource();
 			this.RefreshCrossBreederDataSource();
 			this.RefreshCrossBreederDataSource();
+		}
+
+		/// <summary>
+		/// Handle an Auto crossbreed completion event
+		/// </summary>
+		private void HandleAutoCrossBreedCompleted()
+		{
+			if (this.InvokeRequired)
+			{
+				this.Invoke((MethodInvoker)delegate { HandleAutoCrossBreedCompleted(); });
+				return;
+			}
+
+			this.btnAutoBreed.Enabled = true;
+			this.btnAutoBreed.Text = "Auto-Breed";
+
+			this.RefreshInputDataSource();
 		}
 
 		/// <summary>
