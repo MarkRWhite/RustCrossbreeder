@@ -36,6 +36,8 @@
 			this.lblSeed = new System.Windows.Forms.Label();
 			this.btnImport = new System.Windows.Forms.Button();
 			this.dgvInputSeeds = new System.Windows.Forms.DataGridView();
+			this.Generation = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Probability = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dgvOutputSeeds = new System.Windows.Forms.DataGridView();
 			this.btnCrossBreed = new System.Windows.Forms.Button();
 			this.btnDelete = new System.Windows.Forms.Button();
@@ -55,15 +57,13 @@
 			this.linkLblCreateNew = new System.Windows.Forms.LinkLabel();
 			this.btnSeedSearch = new System.Windows.Forms.Button();
 			this.btnAutoBreed = new System.Windows.Forms.Button();
-			this.seedBindingSource = new System.Windows.Forms.BindingSource(this.components);
 			this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.Generation = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.Probability = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn13 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn14 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn15 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.seedBindingSource = new System.Windows.Forms.BindingSource(this.components);
 			this.dataGridViewTextBoxColumn25 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn26 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn27 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -155,6 +155,20 @@
 			this.dgvInputSeeds.TabIndex = 3;
 			this.dgvInputSeeds.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSeeds_CellDoubleClick);
 			this.dgvInputSeeds.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvSeeds_DataBindingComplete);
+			// 
+			// Generation
+			// 
+			this.Generation.DataPropertyName = "Generation";
+			this.Generation.HeaderText = "Generation";
+			this.Generation.Name = "Generation";
+			this.Generation.ReadOnly = true;
+			// 
+			// Probability
+			// 
+			this.Probability.DataPropertyName = "Probability";
+			this.Probability.HeaderText = "Probability";
+			this.Probability.Name = "Probability";
+			this.Probability.ReadOnly = true;
 			// 
 			// dgvOutputSeeds
 			// 
@@ -396,6 +410,7 @@
 			this.cmbCatalog.TabIndex = 16;
 			this.cmbCatalog.Text = "DefaultCatalog";
 			this.cmbCatalog.SelectedIndexChanged += new System.EventHandler(this.cmbCatalog_SelectedIndexChanged);
+			this.cmbCatalog.TextChanged += new System.EventHandler(this.cmbCatalog_TextChanged);
 			// 
 			// label1
 			// 
@@ -441,10 +456,6 @@
 			this.btnAutoBreed.UseVisualStyleBackColor = true;
 			this.btnAutoBreed.Click += new System.EventHandler(this.btnAutoBreed_Click);
 			// 
-			// seedBindingSource
-			// 
-			this.seedBindingSource.DataSource = typeof(RustCrossbreeder.Data.Seed);
-			// 
 			// dataGridViewTextBoxColumn9
 			// 
 			this.dataGridViewTextBoxColumn9.DataPropertyName = "Traits";
@@ -453,20 +464,6 @@
 			this.dataGridViewTextBoxColumn9.HeaderText = "Traits";
 			this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
 			this.dataGridViewTextBoxColumn9.ReadOnly = true;
-			// 
-			// Generation
-			// 
-			this.Generation.DataPropertyName = "Generation";
-			this.Generation.HeaderText = "Generation";
-			this.Generation.Name = "Generation";
-			this.Generation.ReadOnly = true;
-			// 
-			// Probability
-			// 
-			this.Probability.DataPropertyName = "Probability";
-			this.Probability.HeaderText = "Probability";
-			this.Probability.Name = "Probability";
-			this.Probability.ReadOnly = true;
 			// 
 			// dataGridViewTextBoxColumn12
 			// 
@@ -502,6 +499,10 @@
 			this.dataGridViewTextBoxColumn16.HeaderText = "EmptyTrait";
 			this.dataGridViewTextBoxColumn16.Name = "dataGridViewTextBoxColumn16";
 			this.dataGridViewTextBoxColumn16.ReadOnly = true;
+			// 
+			// seedBindingSource
+			// 
+			this.seedBindingSource.DataSource = typeof(RustCrossbreeder.Data.Seed);
 			// 
 			// dataGridViewTextBoxColumn25
 			// 

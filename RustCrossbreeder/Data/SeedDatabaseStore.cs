@@ -121,11 +121,6 @@ namespace RustCrossbreeder.Data
 
 		public Dictionary<int, string> GetCatalogs()
 		{
-			var args = new DynamicParameters();
-
-			args.Add(RETURN_STATUS_ARG, DbType.Int32, direction: ParameterDirection.Output);
-			args.Add(ERROR_MESSAGE_ARG, DbType.String, direction: ParameterDirection.Output);
-
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				if (connection.State != ConnectionState.Open)
@@ -135,14 +130,7 @@ namespace RustCrossbreeder.Data
 
 				try
 				{
-					var results = connection.ExecuteReader(GET_CATALOGS_PROC, args, commandType: System.Data.CommandType.StoredProcedure);
-
-					if ((ResultStatus)args.Get<int>(RETURN_STATUS_ARG) == ResultStatus.Error)
-					{
-						var err = args.Get<string>(ERROR_MESSAGE_ARG);
-						Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Database error: {GET_CATALOGS_PROC} {err}");
-						return null;
-					}
+					var results = connection.ExecuteReader(GET_CATALOGS_PROC, commandType: CommandType.Text);
 
 					DataTable resultsTable = new DataTable();
 					resultsTable.Load(results);
@@ -181,14 +169,8 @@ namespace RustCrossbreeder.Data
 
 				try
 				{
-					var results = connection.ExecuteReader(GET_SEEDS_PROC, args, commandType: System.Data.CommandType.StoredProcedure);
-
-					if ((ResultStatus)args.Get<int>(RETURN_STATUS_ARG) == ResultStatus.Error)
-					{
-						var err = args.Get<string>(ERROR_MESSAGE_ARG);
-						Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Database error: {CREATE_CATALOG_PROC} {err}");
-						return;
-					}
+					var results = connection.ExecuteReader(CREATE_CATALOG_PROC, args, commandType: CommandType.StoredProcedure);
+					this.LogResultStatus(args, CREATE_CATALOG_PROC);
 				}
 				catch (Exception ex)
 				{
@@ -212,6 +194,42 @@ namespace RustCrossbreeder.Data
 		#endregion
 
 		#region Private Methods
+
+		/// <summary>
+		/// Log the result status from executing the stored procedures
+		/// </summary>
+		/// <param name="args">The procedure arguments</param>
+		/// <param name="proc">The procedure name</param>
+		/// <returns>Returns if an error occurred</returns>
+		private bool LogResultStatus(DynamicParameters args, string proc)
+		{
+			var resultStatus = (ResultStatus)args.Get<int>(RETURN_STATUS_ARG);
+
+			switch (resultStatus)
+			{
+				case ResultStatus.Completed:
+					return false;
+				case ResultStatus.Error:
+					var err = args.Get<string>(ERROR_MESSAGE_ARG);
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Database error: {proc} {err}");
+					return true;
+				case ResultStatus.SeedAlreadyExists:
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Seed already Exists");
+					return true;
+				case ResultStatus.ExistingSeedUpdated:
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"{proc} Existing seed updated");
+					return false;
+				case ResultStatus.CatalogExists:
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Catalog already exists.");
+					return true;
+				case ResultStatus.CatalogNotFound:
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Catalog not found.");
+					return true;
+				default:
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Unrecognized result status code {resultStatus}.");
+					return true;
+			}
+		}
 
 		/// <summary>
 		/// Convert a DataTable of Seeds to a list of Seed objects
@@ -269,6 +287,7 @@ namespace RustCrossbreeder.Data
 		SeedAlreadyExists = 1,
 		ExistingSeedUpdated = 2,
 		Error = 3,
-		CatalogExists = 4
+		CatalogExists = 4,
+		CatalogNotFound = 5
 	}
 }

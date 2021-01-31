@@ -249,6 +249,7 @@ namespace RustCrossbreeder.Data
 		/// </summary>
 		public enum SeedTypes
 		{
+			All,
 			Hemp,
 			Pumpkin,
 			Potato,

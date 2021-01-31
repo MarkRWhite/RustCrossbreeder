@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="SeedStoreConnectionString" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=(localdb)\RustCrossbreeder;Initial Catalog=TitanEDM;Integrated Security=True</Value>
+      <Value Profile="(Default)">Data Source=(localdb)\RustCrossbreeder;Initial Catalog=RustCrossBreeder;Integrated Security=True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

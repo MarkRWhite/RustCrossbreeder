@@ -25,8 +25,8 @@ namespace RustCrossbreeder.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\RustCrossbreeder;Initial Catalog=TitanEDM;Integrated Securi" +
-            "ty=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\RustCrossbreeder;Initial Catalog=RustCrossBreeder;Integrate" +
+            "d Security=True")]
         public string SeedStoreConnectionString {
             get {
                 return ((string)(this["SeedStoreConnectionString"]));

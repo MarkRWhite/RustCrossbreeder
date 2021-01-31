@@ -81,6 +81,13 @@ namespace RustCrossbreeder
 				if (!string.IsNullOrWhiteSpace(line) && line.Length == Traits.TraitCount)
 				{
 					var seedType = (Seed.SeedTypes)Enum.Parse(typeof(Seed.SeedTypes), cmbSeedType.Text);
+					if (seedType == Seed.SeedTypes.All)
+					{
+						this.cmbSeedType.Focus();
+						this.cmbSeedType.DroppedDown = true;
+						return;
+					}
+
 					var catalogId = ((KeyValuePair<int,string>)this.cmbCatalog.SelectedItem).Key;
 					this._seedManager.AddSeed(new Seed(line.ToUpper(), seedType, catalogId));
 				}
@@ -198,8 +205,24 @@ namespace RustCrossbreeder
 		/// <param name="e"></param>
 		private void linkLblCreateNew_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			// TODO: Create a new seed catalog with the name specified in the combo box
 			this._seedManager.CreateCatalog(cmbCatalog.Text);
+
+			var catalogs = this._seedManager.GetCatalogs();
+			var catalogId = catalogs.First(a => a.Value == cmbCatalog.Text).Key;
+			this.cmbCatalog.DataSource = catalogs.ToList();
+
+			var index = 0;
+			for (int i = 0; i < cmbCatalog.Items.Count; i++)
+			{
+				var item = (KeyValuePair<int, string>)cmbCatalog.Items[i];
+				if (item.Key == catalogId)
+				{
+					index = i;
+					break;
+				}
+			}
+			
+			this.cmbCatalog.SelectedIndex = index;
 		}
 
 		/// <summary>
@@ -210,6 +233,8 @@ namespace RustCrossbreeder
 		private void cmbSeedType_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			// TODO: replace the DataGridView data sources with the seeds from the specified seed types (and catalogs)
+
+			// TODO: GetSeeds of type
 		}
 
 		/// <summary>
@@ -220,6 +245,17 @@ namespace RustCrossbreeder
 		private void cmbCatalog_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			this._seedManager.SetActiveCatalog(((KeyValuePair<int, string>) cmbCatalog.SelectedItem).Key);
+			this.linkLblCreateNew.Visible = false;
+		}
+
+		/// <summary>
+		/// Prompt Catalog Create New if catalog doesn't exist
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void cmbCatalog_TextChanged(object sender, EventArgs e)
+		{
+			this.linkLblCreateNew.Visible = true;
 		}
 
 		/// <summary>
@@ -426,5 +462,6 @@ namespace RustCrossbreeder
 		}
 
 		#endregion
+
 	}
 }

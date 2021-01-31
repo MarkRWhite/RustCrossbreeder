@@ -272,27 +272,11 @@ GO
 
 -- Create usp_GetCatalogs
 CREATE PROCEDURE [dbo].[usp_GetCatalogs]
-	@ReturnStatus int output,
-	@ErrorMessage varchar(4000) output
 AS
 BEGIN
-	SET @ReturnStatus = 0
-
-	BEGIN TRY
-		BEGIN TRANSACTION;
-
-		-- Return all catalogs
-		SELECT [CatalogId], [Name]
-		FROM [dbo].[Catalogs]
-		
-		COMMIT TRANSACTION;
-	END TRY
-	BEGIN CATCH
-		SET @ReturnStatus = 3;
-		SET @ErrorMessage = ERROR_MESSAGE();
-		RETURN;
-	END CATCH;
-
+	-- Return all catalogs
+	SELECT [CatalogId], [Name]
+	FROM [dbo].[Catalogs]
 END
 
 GO
@@ -311,16 +295,56 @@ BEGIN
 		BEGIN TRANSACTION;
 
 		-- Check if Catalog exists
-		IF EXISTS (
+		IF NOT EXISTS (
 			SELECT [Name]
 			FROM [dbo].[Catalogs]
 			WHERE [Name] = @Name
 		)
 		BEGIN
-			SET @ReturnStatus = 4; RETURN
+			INSERT INTO [dbo].[Catalogs]([Name]) VALUES (@Name)
+		END
+		ELSE
+		BEGIN
+			SET @ReturnStatus = 4
+		END	
+		
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		SET @ReturnStatus = 3;
+		SET @ErrorMessage = ERROR_MESSAGE();
+		RETURN;
+	END CATCH;
+
+END
+
+GO
+
+-- Create usp_DeleteCatalog
+CREATE PROCEDURE [dbo].[usp_DeleteCatalog]
+	@Name varchar(100), 
+
+	@ReturnStatus int output,
+	@ErrorMessage varchar(4000) output
+AS
+BEGIN
+	SET @ReturnStatus = 0
+
+	BEGIN TRY
+		BEGIN TRANSACTION;
+
+		-- Check if Catalog exists
+		IF NOT EXISTS (
+			SELECT [Name]
+			FROM [dbo].[Catalogs]
+			WHERE [Name] = @Name
+		)
+		BEGIN
+			SET @ReturnStatus = 5; RETURN
 		END
 			
-		INSERT INTO [dbo].[Catalogs]([Name]) VALUES (@Name)
+		DELETE FROM [dbo].[Catalogs]
+		WHERE [Name] = @Name
 		
 		COMMIT TRANSACTION;
 	END TRY
