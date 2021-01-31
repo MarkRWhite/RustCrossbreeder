@@ -11,6 +11,13 @@ GO
 SET NOCOUNT ON
 
 -- Drop Procedures to recreate
+IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_GetSeeds') BEGIN
+	DROP PROCEDURE [dbo].[usp_GetSeeds]
+END
+
+GO
+
+-- Drop Procedures to recreate
 IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_AddSeed') BEGIN
 	DROP PROCEDURE [dbo].[usp_AddSeed]
 END
@@ -35,9 +42,59 @@ END
 
 GO
 
+IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_GetCatalogs') BEGIN
+	DROP PROCEDURE [dbo].[usp_GetCatalogs]
+END
+
+GO
+
+IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_CreateCatalog') BEGIN
+	DROP PROCEDURE [dbo].[usp_CreateCatalog]
+END
+
+GO
+
+IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_DeleteCatalog') BEGIN
+	DROP PROCEDURE [dbo].[usp_DeleteCatalog]
+END
+
+GO
+
 CREATE TYPE SeedTableType AS TABLE (
 	[SeedId] int NOT NULL
 );
+
+GO
+
+-- Create usp_GetSeeds
+CREATE PROCEDURE [dbo].[usp_GetSeeds]
+	@SeedType int, 
+	@CatalogId int,
+
+	@ReturnStatus int output,
+	@ErrorMessage varchar(4000) output
+AS
+BEGIN
+	SET @ReturnStatus = 0
+
+	BEGIN TRY
+		BEGIN TRANSACTION;
+
+		-- Return all Seeds
+		SELECT [SeedId], [Traits], [SeedType], [CatalogId], [Generation], [Probability], [Created]
+		FROM [dbo].[Seeds]
+		WHERE [CatalogId] = @CatalogId
+		AND [SeedType] = @SeedType
+		
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		SET @ReturnStatus = 3;
+		SET @ErrorMessage = ERROR_MESSAGE();
+		RETURN;
+	END CATCH;
+
+END
 
 GO
 
@@ -212,3 +269,65 @@ BEGIN
 END
 
 GO
+
+-- Create usp_GetCatalogs
+CREATE PROCEDURE [dbo].[usp_GetCatalogs]
+	@ReturnStatus int output,
+	@ErrorMessage varchar(4000) output
+AS
+BEGIN
+	SET @ReturnStatus = 0
+
+	BEGIN TRY
+		BEGIN TRANSACTION;
+
+		-- Return all catalogs
+		SELECT [CatalogId], [Name]
+		FROM [dbo].[Catalogs]
+		
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		SET @ReturnStatus = 3;
+		SET @ErrorMessage = ERROR_MESSAGE();
+		RETURN;
+	END CATCH;
+
+END
+
+GO
+
+-- Create usp_CreateCatalog
+CREATE PROCEDURE [dbo].[usp_CreateCatalog]
+	@Name varchar(100), 
+
+	@ReturnStatus int output,
+	@ErrorMessage varchar(4000) output
+AS
+BEGIN
+	SET @ReturnStatus = 0
+
+	BEGIN TRY
+		BEGIN TRANSACTION;
+
+		-- Check if Catalog exists
+		IF EXISTS (
+			SELECT [Name]
+			FROM [dbo].[Catalogs]
+			WHERE [Name] = @Name
+		)
+		BEGIN
+			SET @ReturnStatus = 4; RETURN
+		END
+			
+		INSERT INTO [dbo].[Catalogs]([Name]) VALUES (@Name)
+		
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		SET @ReturnStatus = 3;
+		SET @ErrorMessage = ERROR_MESSAGE();
+		RETURN;
+	END CATCH;
+
+END

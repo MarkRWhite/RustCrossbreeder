@@ -22,7 +22,7 @@ namespace RustCrossbreeder
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			// Initialize Components
-			ISeedStore seedStore = new SeedMemoryStore(); // TODO: Implement SeedStore factory
+			ISeedStore seedStore = new SeedDatabaseStore(Properties.Settings.Default.SeedStoreConnectionString); // TODO: Implement SeedStore factory
 			var seedManager = new SeedManager(seedStore);
 
 			Application.Run(new RustCrossbreederForm(seedManager));
