@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,7 @@ namespace RustCrossbreeder.Data
 		private string GET_CATALOGS_PROC = "usp_GetCatalogs";
 		private string CREATE_CATALOG_PROC = "usp_CreateCatalog";
 		private string DELETE_CATALOG_PROC = "usp_DeleteCatalog";
+		private string STORE_SEED_PROC = "usp_AddSeed";
 
 		private string RETURN_STATUS_ARG = "ReturnStatus";
 		private string ERROR_MESSAGE_ARG = "ErrorMessage";
@@ -60,28 +62,16 @@ namespace RustCrossbreeder.Data
 			args.Add(nameof(Seed.SeedType), type, DbType.Int32, ParameterDirection.Input);
 			args.Add(nameof(Seed.CatalogId), catalogId, DbType.Int32, ParameterDirection.Input);
 
-			args.Add(RETURN_STATUS_ARG, DbType.Int32, direction: ParameterDirection.Output);
-			args.Add(ERROR_MESSAGE_ARG, DbType.String, direction: ParameterDirection.Output);
-
 			using (var connection = new SqlConnection(_connectionString))
 			{
-				if (connection.State != ConnectionState.Open)
-				{
-					connection.Open();
-				}
-
 				try
 				{
+					connection.Open();
 					var results = connection.ExecuteReader(GET_SEEDS_PROC, args, commandType: CommandType.StoredProcedure);
+					var seeds = results.Parse<Seed>().ToArray();
 
-					if ((ResultStatus)args.Get<int>(RETURN_STATUS_ARG) == ResultStatus.Error)
-					{
-						var err = args.Get<string>(ERROR_MESSAGE_ARG);
-						Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Database error: {GET_SEEDS_PROC} {err}");
-						return null;
-					}
+					// TODO: Pull in Parent Seeds and attach them to children
 
-					var seeds = results.Parse<Seed>();
 					return seeds.ToArray();
 				}
 				catch (Exception ex)
@@ -109,9 +99,43 @@ namespace RustCrossbreeder.Data
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Store a seed in the database
+		/// </summary>
+		/// <param name="seed"></param>
 		public void StoreSeed(Seed seed)
 		{
-			throw new NotImplementedException();
+			using (var connection = new SqlConnection(_connectionString))
+			{
+				var cmd = new SqlCommand(STORE_SEED_PROC, connection);
+				cmd.CommandType = CommandType.StoredProcedure;
+				cmd.Parameters.AddWithValue(nameof(seed.Traits), seed.Traits);
+				cmd.Parameters.AddWithValue(nameof(seed.SeedType), seed.SeedType);
+				cmd.Parameters.AddWithValue(nameof(seed.CatalogId), seed.CatalogId);
+				cmd.Parameters.AddWithValue(nameof(seed.Generation), seed.Generation);
+				cmd.Parameters.AddWithValue("Parents", seed.GetParentDataTable() );
+				cmd.Parameters.AddWithValue(nameof(seed.Probability), seed.Probability);
+
+				cmd.Parameters.Add(RETURN_STATUS_ARG, SqlDbType.Int).Direction = ParameterDirection.Output;
+				cmd.Parameters.AddWithValue(ERROR_MESSAGE_ARG, String.Empty).Direction = ParameterDirection.Output;
+
+				try
+				{
+					connection.Open();
+					var results = cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Exception executing: {STORE_SEED_PROC} {ex}");
+				}
+				finally
+				{
+					if (connection.State == ConnectionState.Open)
+					{
+						connection.Close();
+					}
+				}
+			}
 		}
 
 		public void DeleteSeed(Seed seed)
@@ -123,13 +147,9 @@ namespace RustCrossbreeder.Data
 		{
 			using (var connection = new SqlConnection(_connectionString))
 			{
-				if (connection.State != ConnectionState.Open)
-				{
-					connection.Open();
-				}
-
 				try
 				{
+					connection.Open();
 					var results = connection.ExecuteReader(GET_CATALOGS_PROC, commandType: CommandType.Text);
 
 					DataTable resultsTable = new DataTable();
@@ -162,15 +182,11 @@ namespace RustCrossbreeder.Data
 
 			using (var connection = new SqlConnection(_connectionString))
 			{
-				if (connection.State != ConnectionState.Open)
-				{
-					connection.Open();
-				}
-
 				try
 				{
-					var results = connection.ExecuteReader(CREATE_CATALOG_PROC, args, commandType: CommandType.StoredProcedure);
-					this.LogResultStatus(args, CREATE_CATALOG_PROC);
+					connection.Open();
+					connection.ExecuteReader(CREATE_CATALOG_PROC, args, commandType: CommandType.StoredProcedure);
+					this.LogResultStatus((ResultStatus)args.Get<int>(RETURN_STATUS_ARG), args.Get<string>(ERROR_MESSAGE_ARG), CREATE_CATALOG_PROC);
 				}
 				catch (Exception ex)
 				{
@@ -201,17 +217,14 @@ namespace RustCrossbreeder.Data
 		/// <param name="args">The procedure arguments</param>
 		/// <param name="proc">The procedure name</param>
 		/// <returns>Returns if an error occurred</returns>
-		private bool LogResultStatus(DynamicParameters args, string proc)
+		private bool LogResultStatus(ResultStatus status, string errorMessage, string proc)
 		{
-			var resultStatus = (ResultStatus)args.Get<int>(RETURN_STATUS_ARG);
-
-			switch (resultStatus)
+			switch (status)
 			{
 				case ResultStatus.Completed:
 					return false;
 				case ResultStatus.Error:
-					var err = args.Get<string>(ERROR_MESSAGE_ARG);
-					Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Database error: {proc} {err}");
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Database error: {proc} {errorMessage}");
 					return true;
 				case ResultStatus.SeedAlreadyExists:
 					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Seed already Exists");
@@ -226,7 +239,7 @@ namespace RustCrossbreeder.Data
 					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Catalog not found.");
 					return true;
 				default:
-					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Unrecognized result status code {resultStatus}.");
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Warning, $"Database error: {proc} Unrecognized result status code {status}.");
 					return true;
 			}
 		}

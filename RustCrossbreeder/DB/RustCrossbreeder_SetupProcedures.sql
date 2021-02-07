@@ -69,32 +69,16 @@ GO
 -- Create usp_GetSeeds
 CREATE PROCEDURE [dbo].[usp_GetSeeds]
 	@SeedType int, 
-	@CatalogId int,
-
-	@ReturnStatus int output,
-	@ErrorMessage varchar(4000) output
+	@CatalogId int
 AS
 BEGIN
-	SET @ReturnStatus = 0
-
-	BEGIN TRY
-		BEGIN TRANSACTION;
-
-		-- Return all Seeds
-		SELECT [SeedId], [Traits], [SeedType], [CatalogId], [Generation], [Probability], [Created]
-		FROM [dbo].[Seeds]
-		WHERE [CatalogId] = @CatalogId
-		AND [SeedType] = @SeedType
-		
-		COMMIT TRANSACTION;
-	END TRY
-	BEGIN CATCH
-		SET @ReturnStatus = 3;
-		SET @ErrorMessage = ERROR_MESSAGE();
-		RETURN;
-	END CATCH;
-
+	-- Return all Seeds
+	SELECT [SeedId], [Traits], [SeedType], [CatalogId], [Generation], [Probability], [Created]
+	FROM [dbo].[Seeds]
+	WHERE [CatalogId] = @CatalogId
+	AND [SeedType] = @SeedType
 END
+GO
 
 GO
 

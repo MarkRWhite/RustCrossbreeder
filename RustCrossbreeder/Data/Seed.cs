@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -194,7 +195,29 @@ namespace RustCrossbreeder.Data
 			this.SeedType = seedType;
 			this.CatalogId = catalogId;
 			this.Generation = generation;
-			this.ParentSeeds = parents;
+			this.ParentSeeds = parents ?? new Seed[0];
+			this.Probability = probability;
+		}
+
+		/// <summary>
+		/// Create a new seed with the specified traits
+		/// NOTE: This constructor should only be used by the deserializer
+		/// </summary>
+		/// <param name="seedId">The SeedID</param>
+		/// <param name="traits">The seed genetic traits</param>
+		/// <param name="seedType">Type of seed</param>
+		/// <param name="catalogId">The server/seed catalog ID</param>
+		/// <param name="generation">The seed generation</param>
+		/// <param name="parents">The parent seeds information</param>
+		/// <param name="probability">The probability of this seed being created from its parents</param>
+		public Seed(int seedId, string traits, int seedType, int catalogId, int generation, decimal probability, DateTime created)
+		{
+			this.SeedId = SeedId;
+			this.Traits = traits;
+			this.SeedType = (Seed.SeedTypes)seedType;
+			this.CatalogId = catalogId;
+			this.Generation = generation;
+			this.ParentSeeds = new Seed[0]; // TODO: Seed Parents will be assigned after deserialization
 			this.Probability = probability;
 		}
 
@@ -224,6 +247,25 @@ namespace RustCrossbreeder.Data
 			return new Seed(this.Traits, this.SeedType, this.CatalogId, this.Generation, this.ParentSeeds, this.Probability);
 		}
 
+		/// <summary>
+		/// Convert parent seedIds to DataTable extension method
+		/// </summary>
+		/// <param name="seed"></param>
+		/// <returns></returns>
+		public DataTable GetParentDataTable()
+		{
+			var results = new DataTable();
+			results.Columns.Add();
+			foreach (var parent in this.ParentSeeds)
+			{
+				var row = results.NewRow();
+				row[0] = parent.SeedId;
+				results.Rows.Add(row);
+			}
+
+			return results;
+		}
+
 		#endregion
 
 		#region Static Methods
@@ -249,7 +291,6 @@ namespace RustCrossbreeder.Data
 		/// </summary>
 		public enum SeedTypes
 		{
-			All,
 			Hemp,
 			Pumpkin,
 			Potato,

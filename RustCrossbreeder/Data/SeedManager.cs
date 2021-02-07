@@ -116,6 +116,7 @@ namespace RustCrossbreeder.Data
 		/// <returns></returns>
 		public Seed[] GetActiveSeeds()
 		{
+			var test = this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId);
 			return this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId).ToArray();
 		}
 
@@ -223,8 +224,7 @@ namespace RustCrossbreeder.Data
 		public void SetActiveSeedType(Seed.SeedTypes seedType)
 		{
 			this._activeSeedType = seedType;
-
-			// TODO: Trigger data lookup and refresh
+			this.ActiveSeedTypeUpdated?.Invoke();
 		}
 
 		/// <summary>
@@ -234,8 +234,7 @@ namespace RustCrossbreeder.Data
 		public void SetActiveCatalog(int catalogId)
 		{
 			this._activeCatalogId = catalogId;
-
-			// TODO: Trigger data source lookup and refresh on the UI (maybe throw an updated event?)
+			this.ActiveCatalogUpdated?.Invoke();
 		}
 
 		#endregion

@@ -81,13 +81,6 @@ namespace RustCrossbreeder
 				if (!string.IsNullOrWhiteSpace(line) && line.Length == Traits.TraitCount)
 				{
 					var seedType = (Seed.SeedTypes)Enum.Parse(typeof(Seed.SeedTypes), cmbSeedType.Text);
-					if (seedType == Seed.SeedTypes.All)
-					{
-						this.cmbSeedType.Focus();
-						this.cmbSeedType.DroppedDown = true;
-						return;
-					}
-
 					var catalogId = ((KeyValuePair<int,string>)this.cmbCatalog.SelectedItem).Key;
 					this._seedManager.AddSeed(new Seed(line.ToUpper(), seedType, catalogId));
 				}
@@ -232,9 +225,7 @@ namespace RustCrossbreeder
 		/// <param name="e"></param>
 		private void cmbSeedType_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			// TODO: replace the DataGridView data sources with the seeds from the specified seed types (and catalogs)
-
-			// TODO: GetSeeds of type
+			this._seedManager.SetActiveSeedType((Seed.SeedTypes)Enum.Parse(typeof(Seed.SeedTypes), (string)cmbSeedType.SelectedItem));
 		}
 
 		/// <summary>

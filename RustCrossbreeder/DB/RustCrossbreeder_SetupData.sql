@@ -19,15 +19,15 @@ SELECT TOP 0 [SeedTypeId], [Name], [BaseGrowth], [BaseYield], [BaseWaterNeed], [
 INTO #SeedTypesTemp
 FROM [dbo].[SeedTypes]
 
-INSERT INTO #SeedTypesTemp VALUES (1, 'Hemp', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (2, 'Pumpkin', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (3, 'Potato', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (4, 'Corn', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (5, 'BlueBerry', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (6, 'RedBerry', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (7, 'YellowBerry', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (8, 'GreenBerry', 1, 1, 5, 1)
-INSERT INTO #SeedTypesTemp VALUES (9, 'WhiteBerry', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (0, 'Hemp', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (1, 'Pumpkin', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (2, 'Potato', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (3, 'Corn', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (4, 'BlueBerry', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (5, 'RedBerry', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (6, 'YellowBerry', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (7, 'GreenBerry', 1, 1, 5, 1)
+INSERT INTO #SeedTypesTemp VALUES (8, 'WhiteBerry', 1, 1, 5, 1)
 
 -- Compare the old/new seed types and add any new ones (but do not edit existing values)
 INSERT INTO [dbo].[SeedTypes] ([SeedTypeId], [Name], [BaseGrowth], [BaseYield], [BaseWaterNeed], [BaseHardiness])
