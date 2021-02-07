@@ -195,7 +195,7 @@ namespace RustCrossbreeder.Data
 			this.SeedType = seedType;
 			this.CatalogId = catalogId;
 			this.Generation = generation;
-			this.ParentSeeds = parents.ToArray() ?? new Seed[0];
+			this.ParentSeeds = parents?.ToArray() ?? new Seed[0];
 			this.Probability = probability;
 		}
 
