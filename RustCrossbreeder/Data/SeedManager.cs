@@ -19,7 +19,12 @@ namespace RustCrossbreeder.Data
 		/// <summary>
 		/// Denotes the maximum amount of worker threads
 		/// </summary>
-		private const int MAX_BREEDER_THREADS = 10;
+		private const int MAX_BREEDER_THREADS = 100;
+
+		/// <summary>
+		/// Denotes how many crossbreed operations occur in a batch (executed on a different thread)
+		/// </summary>
+		private const int CROSSBREED_BATCH_SIZE = 10000;
 
 		#endregion
 
@@ -309,6 +314,8 @@ namespace RustCrossbreeder.Data
 				maxParents = MaximumParents;
 			}
 
+			List<IEnumerable<Seed>> work = null;
+
 			for (int i = 0; i < generations; i++)
 			{
 				// Create all permutations of the seed array using the specified amount of parents
@@ -316,27 +323,49 @@ namespace RustCrossbreeder.Data
 				{
 					var parentArraysPermutations = GetPermutations(seeds, parentAmount);
 
-					while (this.BreederThreadCount >= MAX_BREEDER_THREADS)
+					if (work == null)
 					{
-						Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Reached max thread count: {MAX_BREEDER_THREADS}");
-						Thread.Sleep(50); // Wait for breeder threads to finish work before starting new ones
+						work = parentArraysPermutations.ToList();
 					}
-
-					// Start a breeder thread
-					this.BreederThreadCount++;
-					var breederThread = new Thread(() => BreedThreadWork(parentArraysPermutations))
+					else
 					{
-						IsBackground = true,
-						Name = $"BreederThread:{BreederThreadCount}"
-					};
-					breederThread.Start();
+						work.AddRange(parentArraysPermutations);
+					}
 				}
 			}
 
-			// Wait for threads to finish
-			while(this.BreederThreadCount > 0)
+			// Split the work between batches
+			var permutations = work.Count();
+			var batchCount = permutations / CROSSBREED_BATCH_SIZE;
+			var remainder = permutations % CROSSBREED_BATCH_SIZE;
+
+			Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Created {work.Count()} permutations in {batchCount} batches of {CROSSBREED_BATCH_SIZE}");
+
+			for (int batch = 0; batch <= batchCount; batch++)
 			{
-				Thread.Sleep(50);
+				var workingList = work.GetRange(batch * CROSSBREED_BATCH_SIZE, batch == batchCount ? remainder : CROSSBREED_BATCH_SIZE);
+
+				while (this.BreederThreadCount >= MAX_BREEDER_THREADS)
+				{
+					Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Reached max thread count: {MAX_BREEDER_THREADS}");
+					Thread.Sleep(50); // Wait for breeder threads to finish work before starting new ones
+				}
+
+				// Start a breeder thread
+				this.BreederThreadCount++;
+				var breederThread = new Thread(() => BreedThreadWork(workingList))
+				{
+					IsBackground = true,
+					Name = $"BreederThread:{BreederThreadCount}"
+				};
+				breederThread.Start();
+			}
+
+			// Wait for threads to finish
+			while (this.BreederThreadCount > 0)
+			{
+				Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Waiting for {this.BreederThreadCount} threads to finish...");
+				Thread.Sleep(250);
 			}
 
 			// Store results in temporary memory into database
