@@ -18,7 +18,6 @@ namespace RustCrossbreeder.Data
 		private string ADD_SEED_PROC = "usp_AddSeed";
 		private string UPDATE_SEED_PROC = "usp_UpdateSeed";
 		private string DELETE_SEED_PROC = "usp_DeleteSeed";
-
 		private string GET_CATALOGS_PROC = "usp_GetCatalogs";
 		private string CREATE_CATALOG_PROC = "usp_CreateCatalog";
 		private string DELETE_CATALOG_PROC = "usp_DeleteCatalog";
@@ -27,7 +26,6 @@ namespace RustCrossbreeder.Data
 		private string RETURN_STATUS_ARG = "ReturnStatus";
 		private string ERROR_MESSAGE_ARG = "ErrorMessage";
 
-		private string CATALOG_ID_ARG = "CatalogId";
 		private string CATLOG_NAME_ARG = "Name";
 		
 		#endregion
@@ -140,7 +138,32 @@ namespace RustCrossbreeder.Data
 
 		public void DeleteSeed(Seed seed)
 		{
-			throw new NotImplementedException();
+			var args = new DynamicParameters();
+			args.Add(nameof(Seed.SeedId), seed.SeedId, DbType.Int32, ParameterDirection.Input);
+
+			args.Add(RETURN_STATUS_ARG, DbType.Int32, direction: ParameterDirection.Output);
+			args.Add(ERROR_MESSAGE_ARG, DbType.String, direction: ParameterDirection.Output);
+
+			using (var connection = new SqlConnection(_connectionString))
+			{
+				try
+				{
+					connection.Open();
+					connection.ExecuteReader(DELETE_SEED_PROC, args, commandType: CommandType.StoredProcedure);
+					this.LogResultStatus((ResultStatus)args.Get<int>(RETURN_STATUS_ARG), args.Get<string>(ERROR_MESSAGE_ARG), CREATE_CATALOG_PROC);
+				}
+				catch (Exception ex)
+				{
+					Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Exception executing: {DELETE_SEED_PROC} {ex}");
+				}
+				finally
+				{
+					if (connection.State == ConnectionState.Open)
+					{
+						connection.Close();
+					}
+				}
+			}
 		}
 
 		public Dictionary<int, string> GetCatalogs()
@@ -278,7 +301,7 @@ namespace RustCrossbreeder.Data
 
 			// NOTE: FROM - https://stackoverflow.com/a/12834413/5157709
 			var convertedList = (from row in resultsTable.AsEnumerable()
-								 select new Tuple<int, string>( Convert.ToInt32(row[CATALOG_ID_ARG]), Convert.ToString(row[CATLOG_NAME_ARG]))).ToList();
+								 select new Tuple<int, string>( Convert.ToInt32(row[nameof(Seed.CatalogId)]), Convert.ToString(row[CATLOG_NAME_ARG]))).ToList();
 
 			foreach (var catalog in convertedList)
 			{

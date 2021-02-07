@@ -109,7 +109,9 @@
     <Folder Include="DB\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Logging\logging.xml" />
+    <Content Include="Logging\logging.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="res\icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -198,6 +198,11 @@ namespace RustCrossbreeder
 		/// <param name="e"></param>
 		private void linkLblCreateNew_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
+			if (string.IsNullOrEmpty(cmbCatalog.Text))
+			{
+				return;
+			}
+
 			this._seedManager.CreateCatalog(cmbCatalog.Text);
 
 			var catalogs = this._seedManager.GetCatalogs();

@@ -23,7 +23,7 @@ namespace RustCrossbreeder.Logging
 		/// <summary>
 		/// The Logger configuration file name
 		/// </summary>
-		private const string LoggerConfigurationFile = "logging.xml";
+		private const string LoggerConfigurationFile = @".\Logging\logging.xml";
 
 		#endregion
 

@@ -102,7 +102,6 @@ BEGIN
 	DECLARE @tempProb dec(10,7)
 	
 	BEGIN TRY
-		BEGIN TRANSACTION;
 
 		-- Check if Seed exists
 		IF EXISTS (
@@ -147,7 +146,6 @@ BEGIN
 		SELECT SCOPE_IDENTITY(), [P].[SeedId]
 		FROM @Parents AS [P]
 	
-		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
 		SET @ReturnStatus = 3;

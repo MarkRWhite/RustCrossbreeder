@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,15 @@ namespace RustCrossbreeder.Data
 	/// </summary>
 	public class SeedManager
 	{
+		#region Constants
+
+		/// <summary>
+		/// Denotes the maximum amount of worker threads
+		/// </summary>
+		private const int MAX_BREEDER_THREADS = 100;
+
+		#endregion
+
 		#region Fields
 
 		/// <summary>
@@ -45,6 +55,22 @@ namespace RustCrossbreeder.Data
 		/// </summary>
 		private Thread _workerThread;
 
+		/// <summary>
+		/// Denotes the current amount of breeder worker threads
+		/// </summary>
+		private int _breederThreadCount;
+
+		/// <summary>
+		/// An access control object to manage breeder thread count
+		/// </summary>
+		private object _breederLock = new object();
+
+		/// <summary>
+		/// A temporary cache of seeds used to speed up crossbreeding. Used to store the intermediate Seeds before being pushed to the database.
+		/// NOTE: This dictionary is used for deduplication in C# so we don't have to execute duplicate SQL Queries on existing seeds.
+		/// </summary>
+		private ConcurrentDictionary<string, Seed> _seedCache = new ConcurrentDictionary<string, Seed>();
+
 		#endregion
 
 		#region Events
@@ -63,6 +89,19 @@ namespace RustCrossbreeder.Data
 		/// Signals that an AutoCrossBreed operation has finished
 		/// </summary>
 		public event Action AutoCrossBreedCompleted;
+
+		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// Returns the current breeder count in a thread safe way
+		/// </summary>
+		private int BreederThreadCount
+		{
+			get { lock (this._breederLock) { return this._breederThreadCount; } }
+			set { lock (this._breederLock) { this._breederThreadCount = value; } }
+		}
 
 		#endregion
 
@@ -116,7 +155,6 @@ namespace RustCrossbreeder.Data
 		/// <returns></returns>
 		public Seed[] GetActiveSeeds()
 		{
-			var test = this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId);
 			return this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId).ToArray();
 		}
 
@@ -192,9 +230,10 @@ namespace RustCrossbreeder.Data
 			}
 
 			// Construct seed objects for each result
+			var probability = 1M / plantBuilder.Count;
 			foreach (var resultBuilder in plantBuilder)
 			{
-				resultSeeds.Add(new Seed(resultBuilder.ToString(), this._activeSeedType, this._activeCatalogId, maxGeneration + 1, seeds, 1M / plantBuilder.Count));
+				resultSeeds.Add(new Seed(resultBuilder.ToString(), this._activeSeedType, this._activeCatalogId, maxGeneration + 1, seeds, probability));
 			}
 
 			return resultSeeds.ToArray();
@@ -250,6 +289,13 @@ namespace RustCrossbreeder.Data
 		/// <returns></returns>
 		private void AutoCrossbreedSeeds(Seed[] seeds, int generations, int maxParents)
 		{
+			var startTime = DateTime.Now;
+
+			lock (this._breederLock)
+			{
+				this._seedCache.Clear(); // Clear the temporary cache
+			}
+
 			// Handle Null or Empty Input
 			if (seeds == null || seeds.Length == 0)
 			{
@@ -269,14 +315,48 @@ namespace RustCrossbreeder.Data
 				for (int parentAmount = MinimumParents; parentAmount <= maxParents; parentAmount++)
 				{
 					var parentArraysPermutations = GetPermutations(seeds, parentAmount);
+
+					Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Breeding {seeds.Count()} seeds with {parentAmount} parents. {parentArraysPermutations.Count()} permutations");
+
 					foreach (var parentArray in parentArraysPermutations)
 					{
-						var result = this.BreedSeeds(parentArray.ToArray());
-						foreach (var seed in result)
+						while (this.BreederThreadCount >= MAX_BREEDER_THREADS)
 						{
-							this._seedStore.StoreSeed(seed);
+							Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Reached max thread count: {MAX_BREEDER_THREADS}");
+							Thread.Sleep(50); // Wait for breeder threads to finish work before starting new ones
 						}
+
+						// Start a breeder thread
+						this.BreederThreadCount++;
+						var breederThread = new Thread(() => BreedThreadWork(parentArray))
+						{
+							IsBackground = true,
+							Name = $"BreederThread"
+						};
+						breederThread.Start();
 					}
+				}
+			}
+
+			Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Finished Generating seeds in: {(DateTime.Now - startTime).TotalMilliseconds}ms");
+
+			// Store results in temporary memory into database
+			var currentSeeds = this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId);
+			foreach (var seed in this._seedCache)
+			{
+				bool match = false;
+				foreach(var existingSeed in currentSeeds)
+				{
+					if (seed.Key == existingSeed.Traits)
+					{
+						match = true;
+						break;
+					}
+				}
+				
+				if (!match)
+				{
+					this._seedStore.StoreSeed(seed.Value);
 				}
 			}
 
@@ -324,6 +404,24 @@ namespace RustCrossbreeder.Data
 					traitSlots[i].Remove(toRemove.Key);
 				}
 			}
+		}
+
+		/// <summary>
+		/// The target of the worker thread invocation to breed a set of seeds
+		/// </summary>
+		private void BreedThreadWork(IEnumerable<Seed> parentArray)
+		{
+			var result = this.BreedSeeds(parentArray.ToArray());
+
+			foreach (var seed in result)
+			{
+				if (!this._seedCache.ContainsKey(seed.Traits) || seed.Probability > this._seedCache[seed.Traits].Probability)
+				{
+					this._seedCache[seed.Traits] = seed;
+				}
+			}
+
+			this.BreederThreadCount--;
 		}
 
 		#endregion
