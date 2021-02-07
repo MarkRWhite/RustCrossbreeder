@@ -57,6 +57,7 @@
 			this.linkLblCreateNew = new System.Windows.Forms.LinkLabel();
 			this.btnSeedSearch = new System.Windows.Forms.Button();
 			this.btnAutoBreed = new System.Windows.Forms.Button();
+			this.lblError = new System.Windows.Forms.Label();
 			this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn13 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -456,6 +457,18 @@
 			this.btnAutoBreed.UseVisualStyleBackColor = true;
 			this.btnAutoBreed.Click += new System.EventHandler(this.btnAutoBreed_Click);
 			// 
+			// lblError
+			// 
+			this.lblError.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.lblError.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblError.ForeColor = System.Drawing.Color.Red;
+			this.lblError.Location = new System.Drawing.Point(746, 34);
+			this.lblError.Name = "lblError";
+			this.lblError.Size = new System.Drawing.Size(453, 28);
+			this.lblError.TabIndex = 21;
+			this.lblError.Text = "Error:";
+			this.lblError.Visible = false;
+			// 
 			// dataGridViewTextBoxColumn9
 			// 
 			this.dataGridViewTextBoxColumn9.DataPropertyName = "Traits";
@@ -625,6 +638,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1211, 528);
+			this.Controls.Add(this.lblError);
 			this.Controls.Add(this.btnAutoBreed);
 			this.Controls.Add(this.btnSeedSearch);
 			this.Controls.Add(this.linkLblCreateNew);
@@ -745,6 +759,7 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn30;
 		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn31;
 		private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn32;
+		private System.Windows.Forms.Label lblError;
 	}
 }
 

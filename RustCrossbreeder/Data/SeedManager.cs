@@ -24,7 +24,7 @@ namespace RustCrossbreeder.Data
 		/// <summary>
 		/// Denotes how many crossbreed operations occur in a batch (executed on a different thread)
 		/// </summary>
-		private const int CROSSBREED_BATCH_SIZE = 10000;
+		private const int CROSSBREED_BATCH_SIZE = 5000;
 
 		#endregion
 
@@ -94,6 +94,21 @@ namespace RustCrossbreeder.Data
 		/// Signals that an AutoCrossBreed operation has finished
 		/// </summary>
 		public event Action AutoCrossBreedCompleted;
+
+		/// <summary>
+		/// Signal an error
+		/// </summary>
+		public event ErrorMessageDelegate DisplayError;
+
+		#endregion
+
+		#region Delegates
+
+		/// <summary>
+		/// Delegate used to display error messages to the form
+		/// </summary>
+		/// <param name="error"></param>
+		public delegate void ErrorMessageDelegate(string error);
 
 		#endregion
 
@@ -316,22 +331,31 @@ namespace RustCrossbreeder.Data
 
 			List<IEnumerable<Seed>> work = null;
 
-			for (int i = 0; i < generations; i++)
+			try
 			{
-				// Create all permutations of the seed array using the specified amount of parents
-				for (int parentAmount = MinimumParents; parentAmount <= maxParents; parentAmount++)
+				for (int i = 0; i < generations; i++)
 				{
-					var parentArraysPermutations = GetPermutations(seeds, parentAmount);
+					// Create all permutations of the seed array using the specified amount of parents
+					for (int parentAmount = MinimumParents; parentAmount <= maxParents; parentAmount++)
+					{
+						var parentArraysPermutations = GetPermutations(seeds, parentAmount);
 
-					if (work == null)
-					{
-						work = parentArraysPermutations.ToList();
-					}
-					else
-					{
-						work.AddRange(parentArraysPermutations);
+						if (work == null)
+						{
+							work = parentArraysPermutations.ToList();
+						}
+						else
+						{
+							work.AddRange(parentArraysPermutations);
+						}
 					}
 				}
+			}
+			catch(Exception ex) // Catch out of memory exception during permutation calculation
+			{
+				Logger.Instance.Log(Logger.Severity.Error, $"Exception: {ex}");
+				this.DisplayError?.Invoke($"Error: {ex.Message}");
+				return;
 			}
 
 			// Split the work between batches

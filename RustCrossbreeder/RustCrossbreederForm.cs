@@ -57,6 +57,7 @@ namespace RustCrossbreeder
 			this._seedManager.ActiveCatalogUpdated += HandleActiveCatalogUpdated;
 			this._seedManager.ActiveSeedTypeUpdated += HandleActiveSeedTypeUpdated;
 			this._seedManager.AutoCrossBreedCompleted += HandleAutoCrossBreedCompleted;
+			this._seedManager.DisplayError += HandleDisplayError;
 			this._seedManager.CreateCatalog(cmbCatalog.Text);
 
 			// Set Combo box data sources
@@ -332,6 +333,22 @@ namespace RustCrossbreeder
 			this.btnAutoBreed.Text = "Auto-Breed";
 
 			this.RefreshInputDataSource();
+		}
+
+		/// <summary>
+		/// Display an error on the form from the seed manager
+		/// </summary>
+		/// <param name="error"></param>
+		private void HandleDisplayError(string error)
+		{
+			if (this.InvokeRequired)
+			{
+				this.Invoke((MethodInvoker)delegate { HandleDisplayError(error); });
+				return;
+			}
+
+			this.lblError.Visible = true;
+			this.lblError.Text = error;
 		}
 
 		/// <summary>
