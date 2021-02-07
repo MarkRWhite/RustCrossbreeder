@@ -212,7 +212,7 @@ namespace RustCrossbreeder.Data
 		/// <param name="probability">The probability of this seed being created from its parents</param>
 		public Seed(int seedId, string traits, int seedType, int catalogId, int generation, decimal probability, DateTime created)
 		{
-			this.SeedId = SeedId;
+			this.SeedId = seedId;
 			this.Traits = traits;
 			this.SeedType = (Seed.SeedTypes)seedType;
 			this.CatalogId = catalogId;
