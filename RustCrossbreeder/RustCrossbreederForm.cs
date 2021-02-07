@@ -29,7 +29,7 @@ namespace RustCrossbreeder
 		/// <summary>
 		/// The DataSource for the output display seeds DataGridView
 		/// </summary>
-		private Seed[] _outputSeedsDisplayDataSource;
+		private IList<Seed> _outputSeedsDisplayDataSource;
 
 		#endregion
 
@@ -137,7 +137,7 @@ namespace RustCrossbreeder
 				breedSeeds.Add((Seed)dgvCrossbreedInput.Rows[cell.RowIndex].DataBoundItem);
 			}
 
-			this._outputSeedsDisplayDataSource = this._seedManager.BreedSeeds(breedSeeds.ToArray());
+			this._outputSeedsDisplayDataSource = this._seedManager.BreedSeeds(breedSeeds).ToList();
 
 			this.RefreshOutputDataSource();
 		}

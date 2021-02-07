@@ -19,7 +19,7 @@ namespace RustCrossbreeder.Data
 		/// <summary>
 		/// Denotes the maximum amount of worker threads
 		/// </summary>
-		private const int MAX_BREEDER_THREADS = 100;
+		private const int MAX_BREEDER_THREADS = 10;
 
 		#endregion
 
@@ -155,7 +155,7 @@ namespace RustCrossbreeder.Data
 		/// <returns></returns>
 		public Seed[] GetActiveSeeds()
 		{
-			return this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId).ToArray();
+			return this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId);
 		}
 
 		/// <summary>
@@ -185,10 +185,10 @@ namespace RustCrossbreeder.Data
 		/// </summary>
 		/// <param name="seeds"></param>
 		/// <returns></returns>
-		public Seed[] BreedSeeds(Seed[] seeds)
+		public IEnumerable<Seed> BreedSeeds(IEnumerable<Seed> seeds)
 		{
 			// Handle Null or Empty Input
-			if (seeds == null || seeds.Length == 0)
+			if (seeds == null || seeds.Count() == 0)
 			{
 				return null;
 			}
@@ -316,29 +316,28 @@ namespace RustCrossbreeder.Data
 				{
 					var parentArraysPermutations = GetPermutations(seeds, parentAmount);
 
-					Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Breeding {seeds.Count()} seeds with {parentAmount} parents. {parentArraysPermutations.Count()} permutations");
-
-					foreach (var parentArray in parentArraysPermutations)
+					while (this.BreederThreadCount >= MAX_BREEDER_THREADS)
 					{
-						while (this.BreederThreadCount >= MAX_BREEDER_THREADS)
-						{
-							Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Reached max thread count: {MAX_BREEDER_THREADS}");
-							Thread.Sleep(50); // Wait for breeder threads to finish work before starting new ones
-						}
-
-						// Start a breeder thread
-						this.BreederThreadCount++;
-						var breederThread = new Thread(() => BreedThreadWork(parentArray))
-						{
-							IsBackground = true,
-							Name = $"BreederThread"
-						};
-						breederThread.Start();
+						Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Reached max thread count: {MAX_BREEDER_THREADS}");
+						Thread.Sleep(50); // Wait for breeder threads to finish work before starting new ones
 					}
+
+					// Start a breeder thread
+					this.BreederThreadCount++;
+					var breederThread = new Thread(() => BreedThreadWork(parentArraysPermutations))
+					{
+						IsBackground = true,
+						Name = $"BreederThread:{BreederThreadCount}"
+					};
+					breederThread.Start();
 				}
 			}
 
-			Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Finished Generating seeds in: {(DateTime.Now - startTime).TotalMilliseconds}ms");
+			// Wait for threads to finish
+			while(this.BreederThreadCount > 0)
+			{
+				Thread.Sleep(50);
+			}
 
 			// Store results in temporary memory into database
 			var currentSeeds = this._seedStore.GetSeeds(this._activeSeedType, this._activeCatalogId);
@@ -360,6 +359,8 @@ namespace RustCrossbreeder.Data
 				}
 			}
 
+			Logger.Instance.Log(Logger.Severity.Debug, $"Auto-Breeder Finished Breeding seeds in: {(DateTime.Now - startTime).TotalMilliseconds}ms");
+
 			this.AutoCrossBreedCompleted.Invoke();
 		}
 
@@ -369,7 +370,7 @@ namespace RustCrossbreeder.Data
 		/// </summary>
 		/// <param name="seeds"></param>
 		/// <param name="traitSlots"></param>
-		private void CalculateTraitWeights(Dictionary<char, decimal>[] traitSlots, Seed[] seeds)
+		private void CalculateTraitWeights(Dictionary<char, decimal>[] traitSlots, IEnumerable<Seed> seeds)
 		{
 			// Add Trait weights to dictionaries
 			foreach (var seed in seeds)
@@ -409,15 +410,18 @@ namespace RustCrossbreeder.Data
 		/// <summary>
 		/// The target of the worker thread invocation to breed a set of seeds
 		/// </summary>
-		private void BreedThreadWork(IEnumerable<Seed> parentArray)
+		private void BreedThreadWork(IEnumerable<IEnumerable<Seed>> parentArraysPermutations)
 		{
-			var result = this.BreedSeeds(parentArray.ToArray());
-
-			foreach (var seed in result)
+			foreach (var parentArray in parentArraysPermutations)
 			{
-				if (!this._seedCache.ContainsKey(seed.Traits) || seed.Probability > this._seedCache[seed.Traits].Probability)
+				var result = this.BreedSeeds(parentArray);
+
+				foreach (var seed in result)
 				{
-					this._seedCache[seed.Traits] = seed;
+					if (!this._seedCache.ContainsKey(seed.Traits) || seed.Probability > this._seedCache[seed.Traits].Probability)
+					{
+						this._seedCache[seed.Traits] = seed;
+					}
 				}
 			}
 

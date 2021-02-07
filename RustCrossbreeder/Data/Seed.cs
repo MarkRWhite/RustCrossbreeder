@@ -189,13 +189,13 @@ namespace RustCrossbreeder.Data
 		/// <param name="generation">The seed generation</param>
 		/// <param name="parents">The parent seeds information</param>
 		/// <param name="probability">The probability of this seed being created from its parents</param>
-		public Seed(string traits, SeedTypes seedType, int catalogId, int generation = 0, Seed[] parents = null, decimal probability = 1M )
+		public Seed(string traits, SeedTypes seedType, int catalogId, int generation = 0, IEnumerable<Seed> parents = null, decimal probability = 1M )
 		{
 			this.Traits = traits;
 			this.SeedType = seedType;
 			this.CatalogId = catalogId;
 			this.Generation = generation;
-			this.ParentSeeds = parents ?? new Seed[0];
+			this.ParentSeeds = parents.ToArray() ?? new Seed[0];
 			this.Probability = probability;
 		}
 
