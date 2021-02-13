@@ -18,7 +18,7 @@ GO
 --Use RustCrossbreeder Database
 USE [RustCrossbreeder];
 
-GO--------------------------------------------
+GO
 
 -- Create Seeds Table
 IF NOT EXISTS (SELECT [TABLE_NAME] FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_CATALOG] LIKE 'RustCrossbreeder' AND [TABLE_NAME] LIKE 'Seeds')

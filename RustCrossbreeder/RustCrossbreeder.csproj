@@ -89,6 +89,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="DB\setup.bat" />
     <None Include="packages.config" />
     <None Include="Properties\DataSources\RustCrossbreeder.Data.Seed.datasource" />
     <None Include="Properties\DataSources\RustCrossbreeder.Data.Seed1.datasource" />
@@ -105,10 +106,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="DB\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="DB\RustCrossbreeder_SetupData.sql" />
+    <Content Include="DB\RustCrossbreeder_SetupProcedures.sql" />
+    <Content Include="DB\RustCrossbreeder_SetupTables.sql" />
     <Content Include="Logging\logging.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
