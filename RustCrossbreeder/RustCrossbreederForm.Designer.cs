@@ -444,6 +444,7 @@
 			this.btnSeedSearch.TabIndex = 19;
 			this.btnSeedSearch.Text = "Seed Search";
 			this.btnSeedSearch.UseVisualStyleBackColor = true;
+			this.btnSeedSearch.Visible = false;
 			// 
 			// btnAutoBreed
 			// 

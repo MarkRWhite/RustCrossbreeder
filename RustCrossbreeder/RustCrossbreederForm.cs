@@ -187,7 +187,17 @@ namespace RustCrossbreeder
 		{
 			// TODO: Open auto-breed form, specify generations and max-parents.  display result count and allow import results to seed library
 
-			this._seedManager.StartAutoCrossBreed(this._seedManager.GetActiveSeeds(), 1, 5);
+			var activeSeeds = this._seedManager.GetActiveSeeds();
+			if (activeSeeds.Count() > 20)
+			{
+				var result = MessageBox.Show($"Attempting to Autobreed all permutations of more than 20 seeds can take more than a minute to process.\n\nResult seed permutations increase exponentially with the amount of input seeds. (ex: 20 input seeds create ~3.3 million possible combinations)\n\nContinue?", "Long Processing Time", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+				if (result == DialogResult.Cancel)
+				{
+					return;
+				}
+			}
+
+			this._seedManager.StartAutoCrossBreed(activeSeeds, 1, 5);
 			this.btnAutoBreed.Enabled = false;
 			this.btnAutoBreed.Text = "Processing...";
 		}
