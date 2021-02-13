@@ -133,9 +133,9 @@ namespace RustCrossbreeder
 			}
 
 			var breedSeeds = new List<Seed>();
-			foreach (DataGridViewCell cell in dgvCrossbreedInput.SelectedCells)
+			foreach (DataGridViewRow row in dgvCrossbreedInput.SelectedRows)
 			{
-				breedSeeds.Add((Seed)dgvCrossbreedInput.Rows[cell.RowIndex].DataBoundItem);
+				breedSeeds.Add((Seed)dgvCrossbreedInput.Rows[row.Index].DataBoundItem);
 			}
 
 			this._outputSeedsDisplayDataSource = this._seedManager.BreedSeeds(breedSeeds).ToList();
