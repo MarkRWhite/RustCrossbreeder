@@ -17,9 +17,14 @@ END
 
 GO
 
--- Drop Procedures to recreate
 IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_AddSeed') BEGIN
 	DROP PROCEDURE [dbo].[usp_AddSeed]
+END
+
+GO
+
+IF EXISTS (SELECT [ROUTINE_NAME] FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE [ROUTINE_CATALOG] LIKE 'RustCrossbreeder' AND [ROUTINE_NAME] LIKE 'usp_GetParentSeeds') BEGIN
+	DROP PROCEDURE [dbo].[usp_GetParentSeeds]
 END
 
 GO
@@ -77,6 +82,21 @@ BEGIN
 	FROM [dbo].[Seeds]
 	WHERE [CatalogId] = @CatalogId
 	AND [SeedType] = @SeedType
+END
+
+GO
+
+-- Create usp_GetParentSeeds
+CREATE PROCEDURE [dbo].[usp_GetParentSeeds]
+	@SeedId int
+AS
+BEGIN
+	-- Return all Seeds
+	SELECT [S].[SeedId], [S].[Traits], [S].[SeedType], [S].[CatalogId], [S].[Generation], [S].[Probability], [S].[Created]
+	FROM [dbo].[Seeds] AS [S]
+		JOIN [dbo].[SeedRelationships] AS [SR]
+		ON [S].[SeedId] = [SR].[ParentSeedId]
+	WHERE [SR].[SeedId] = @SeedId
 END
 GO
 

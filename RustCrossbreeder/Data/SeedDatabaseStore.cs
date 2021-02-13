@@ -22,6 +22,7 @@ namespace RustCrossbreeder.Data
 		private string CREATE_CATALOG_PROC = "usp_CreateCatalog";
 		private string DELETE_CATALOG_PROC = "usp_DeleteCatalog";
 		private string STORE_SEED_PROC = "usp_AddSeed";
+		private string GET_SEED_PARENTS_PROC = "usp_GetParentSeeds";
 
 		private string RETURN_STATUS_ARG = "ReturnStatus";
 		private string ERROR_MESSAGE_ARG = "ErrorMessage";
@@ -68,7 +69,11 @@ namespace RustCrossbreeder.Data
 					var results = connection.ExecuteReader(GET_SEEDS_PROC, args, commandType: CommandType.StoredProcedure);
 					var seeds = results.Parse<Seed>().ToArray();
 
-					// TODO: Pull in Parent Seeds and attach them to children
+					// Recursively Pull in Parent Seeds and attach them to children
+					foreach (var seed in seeds)
+					{
+						seed.ParentSeeds.AddRange(this.GetParentSeeds((int)seed.SeedId, connection));
+					}
 
 					return seeds.ToArray();
 				}
@@ -87,14 +92,39 @@ namespace RustCrossbreeder.Data
 			}
 		}
 
-		public Seed[] GetSeeds(int catalogId)
+		/// <summary>
+		/// Recursively attach the parents of the specified SeedId
+		/// </summary>
+		/// <param name="seedId">The seedId to recursively attach parents to</param>
+		/// <param name="connection">A reference to an existing database connection</param>
+		/// <returns></returns>
+		private List<Seed> GetParentSeeds(int seedId, SqlConnection connection)
 		{
-			throw new NotImplementedException();
+			var parentArgs = new DynamicParameters();
+			parentArgs.Add(nameof(Seed.SeedId), seedId, DbType.Int32, ParameterDirection.Input);
+
+			try
+			{
+				var parentsReader = connection.ExecuteReader(GET_SEED_PARENTS_PROC, parentArgs, commandType: CommandType.StoredProcedure);
+				var parents = parentsReader.Parse<Seed>().ToList();
+
+				foreach (var parent in parents)
+				{
+					parent.ParentSeeds.AddRange(this.GetParentSeeds((int)parent.SeedId, connection));
+				}
+
+				return parents;
+			}
+			catch (Exception ex)
+			{
+				Logging.Logger.Instance.Log(Logging.Logger.Severity.Error, $"Exception executing: {GET_SEED_PARENTS_PROC} seedId: {seedId} {ex}");
+				return new List<Seed>();
+			}
 		}
 
 		public Seed GetSeed(Seed.SeedTypes type, int catalogId, string traits)
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException(); // TODO: Implement this in the database if we need it
 		}
 
 		/// <summary>

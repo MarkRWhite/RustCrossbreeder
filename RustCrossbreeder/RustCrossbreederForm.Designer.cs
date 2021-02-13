@@ -660,6 +660,7 @@
 			this.Name = "RustCrossbreederForm";
 			this.Text = "Rust Crossbreeder";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RustCrossbreederForm_FormClosing);
+			this.Load += new System.EventHandler(this.RustCrossbreederForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.dgvInputSeeds)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgvOutputSeeds)).EndInit();
 			this.splitContainerHorizontal.Panel1.ResumeLayout(false);

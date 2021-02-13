@@ -3,7 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="SeedStoreConnectionString" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=(localdb)\RustCrossbreeder;Initial Catalog=RustCrossBreeder;Integrated Security=True</Value>
+      <Value Profile="(Default)">Data Source=(localdb)\RustCrossbreeder;Initial Catalog=RustCrossBreeder;Integrated Security=True;MultipleActiveResultSets=true</Value>
+    </Setting>
+    <Setting Name="UseDatabaseStore" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

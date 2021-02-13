@@ -26,13 +26,25 @@ namespace RustCrossbreeder.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\RustCrossbreeder;Initial Catalog=RustCrossBreeder;Integrate" +
-            "d Security=True")]
+            "d Security=True;MultipleActiveResultSets=true")]
         public string SeedStoreConnectionString {
             get {
                 return ((string)(this["SeedStoreConnectionString"]));
             }
             set {
                 this["SeedStoreConnectionString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseDatabaseStore {
+            get {
+                return ((bool)(this["UseDatabaseStore"]));
+            }
+            set {
+                this["UseDatabaseStore"] = value;
             }
         }
     }

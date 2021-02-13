@@ -88,7 +88,7 @@ namespace RustCrossbreeder.Data
 		/// <summary>
 		/// The Parents of this seed
 		/// </summary>
-		public Seed[] ParentSeeds { get; }
+		public List<Seed> ParentSeeds { get; }
 
 		/// <summary>
 		/// The probability that this seed will be created from the parent seeds
@@ -195,7 +195,7 @@ namespace RustCrossbreeder.Data
 			this.SeedType = seedType;
 			this.CatalogId = catalogId;
 			this.Generation = generation;
-			this.ParentSeeds = parents?.ToArray() ?? new Seed[0];
+			this.ParentSeeds = parents?.ToList() ?? new List<Seed>();
 			this.Probability = probability;
 		}
 
@@ -217,7 +217,7 @@ namespace RustCrossbreeder.Data
 			this.SeedType = (Seed.SeedTypes)seedType;
 			this.CatalogId = catalogId;
 			this.Generation = generation;
-			this.ParentSeeds = new Seed[0]; // TODO: Seed Parents will be assigned after deserialization
+			this.ParentSeeds = new List<Seed>(); // TODO: Seed Parents will be assigned after deserialization
 			this.Probability = probability;
 		}
 

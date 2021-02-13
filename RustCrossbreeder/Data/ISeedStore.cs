@@ -20,13 +20,6 @@ namespace RustCrossbreeder.Data
 		Seed[] GetSeeds(Seed.SeedTypes type, int catalogId);
 
 		/// <summary>
-		/// Get all seeds in the seed store from the specified catalog
-		/// </summary>
-		/// <param name="catalogId"></param>
-		/// <returns></returns>
-		Seed[] GetSeeds(int catalogId);
-
-		/// <summary>
 		/// Gets the specific seed from the seed store
 		/// </summary>
 		/// <param name="type"></param>
